@@ -13,8 +13,8 @@ class DocteurTest extends KernelTestCase{
         $this->validator=self::$container->get("validator");
     }
 
-    private function getDocteur(int $numeroOrdre,string $nom, string $prenom, string $adresse, int  $codePostal, string $ville, string $email, string $telephone=null, string $lienSiteInternet=null){
-        $docteur=(new Docteur)->setNumeroOrdre($numeroOrdre)->setNom($nom)->setPrenom($prenom)->setAdresse($adresse)->setCodePostal($codePostal)->setVille($ville)->setEmail($email)->setTelephone($telephone)->setLienSiteInternet($lienSiteInternet);
+    private function getDocteur(int $numeroOrdre,string $nom, string $prenom, string $adresseTravail, int  $codePostal, string $ville, string $email, string $telephone=null, string $lienSiteInternet=null){
+        $docteur=(new Docteur)->setNumeroOrdre($numeroOrdre)->setNom($nom)->setPrenom($prenom)->setAdresseTravail($adresseTravail)->setCodePostal($codePostal)->setVille($ville)->setEmail($email)->setTelephone($telephone)->setLienSiteInternet($lienSiteInternet);
         return $docteur;
     }
 
@@ -36,10 +36,10 @@ class DocteurTest extends KernelTestCase{
         $this->assertEquals('jeanjean', $docteur->getPrenom());
     }
 
-    public function testGandSAdresse(){
+    public function testGandSAdresseTravail(){
         $docteur = $this->getDocteur(123456789, 'dupont', 'jeanjean', '26 rue du pré', 21850, 'Saint Apollinaire', 'jeanjean@dupont.org', 607080910, 'www.jeanjeandoc.com');
-        $docteur->setAdresse('26 rue du pré');
-        $this->assertEquals('26 rue du pré', $docteur->getAdresse());
+        $docteur->setAdresseTravail('26 rue du pré');
+        $this->assertEquals('26 rue du pré', $docteur->getAdresseTravail());
     }
 
     public function testGandSCodePostal(){
