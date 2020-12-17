@@ -2,15 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\DocteurRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\DocteurRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=DocteurRepository::class)
  */
-class Docteur
+class Docteur extends User
+
 {
     /**
      * @ORM\Id
@@ -21,52 +23,52 @@ class Docteur
 
     /**
      * @ORM\Column(type="string", length=9)
-     * @Assert\NotBlank
-     * @Assert\Unique(message="ce numéro d'ordre est déjà utilisé sur notre site")
-     * @Assert\Regex(pattern="\d{9}", message="Le numéro d'ordre est constitué de 9 chiffres <a href="https://www.onpp.fr/exercice/formalites-ordinales/le-numero-d-ordre.html#:~:text=Le%20num%C3%A9ro%20d'Ordre%20est,incr%C3%A9mentation%20sans%20possibilit%C3%A9%20de%20doublon."> + infos </a>")
+     * @Assert\NotBlank(message="numero d'ordre des médecins obligatoire")
+     * @Assert\Regex(pattern="/^[0-9]{9}$/", message="Le numéro d'ordre est constitué de 9 chiffres")
      */
     private $numeroOrdre;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Champ obligatoire")
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Champ obligatoire")
      */
     private $prenom;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Champ obligatoire")
      */
     private $adresseTravail;
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\NotBlank
-     * @Assert\Regex(pattern="\d{5,6}", message="Veuillez saisir un code poste correct")
+     * @Assert\NotBlank(message="Champ obligatoire")
+     * @Assert\Regex(pattern="/^[0-9]{5,6}$/", message="Veuillez saisir un code postal correct")
      */
     private $codePostal;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Champ obligatoire")
      */
     private $ville;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\Email
+     * @Assert\NotBlank(message="Champ obligatoire")
+     * @Assert\Email(message="Adresse email erronée")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
-     * @Assert\Regex(pattern="\d{10}|d{13}", message="N'entrez que des chiffres. Si vous utilisez un +33 (par exemple), remplacer par 0033")
+     * @Assert\Regex(pattern="/^[0-9]{10}|d{13}$/", message="N'entrez que des chiffres. Si vous utilisez un +33 (par exemple), remplacer par 0033")
      */
     private $telephone;
 
@@ -81,14 +83,16 @@ class Docteur
     private $specialites;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Patient::class, mappedBy="rendezVous")
+     * @ORM\OneToMany(targetEntity=PriseRdv::class, mappedBy="id_docteur")
      */
-    private $rdvPatient;
+    private $priseRdvs;
+
+    
 
     public function __construct()
     {
         $this->specialites = new ArrayCollection();
-        $this->rdvPatient = new ArrayCollection();
+        $this->priseRdvs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -101,7 +105,7 @@ class Docteur
         return $this->numeroOrdre;
     }
 
-    public function setNumeroOrdre(string $numeroOrdre): self
+    public function setNumeroOrdre(?string $numeroOrdre): self
     {
         $this->numeroOrdre = $numeroOrdre;
 
@@ -113,7 +117,7 @@ class Docteur
         return $this->nom;
     }
 
-    public function setNom(string $nom): self
+    public function setNom(?string $nom): self
     {
         $this->nom = $nom;
 
@@ -125,7 +129,7 @@ class Docteur
         return $this->prenom;
     }
 
-    public function setPrenom(string $prenom): self
+    public function setPrenom(?string $prenom): self
     {
         $this->prenom = $prenom;
 
@@ -137,7 +141,7 @@ class Docteur
         return $this->adresseTravail;
     }
 
-    public function setAdresseTravail(string $adresseTravail): self
+    public function setAdresseTravail(?string $adresseTravail): self
     {
         $this->adresseTravail = $adresseTravail;
 
@@ -149,7 +153,7 @@ class Docteur
         return $this->codePostal;
     }
 
-    public function setCodePostal(int $codePostal): self
+    public function setCodePostal(?int $codePostal): self
     {
         $this->codePostal = $codePostal;
 
@@ -161,7 +165,7 @@ class Docteur
         return $this->ville;
     }
 
-    public function setVille(string $ville): self
+    public function setVille(?string $ville): self
     {
         $this->ville = $ville;
 
@@ -173,7 +177,7 @@ class Docteur
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 
@@ -232,29 +236,34 @@ class Docteur
     }
 
     /**
-     * @return Collection|Patient[]
+     * @return Collection|PriseRdv[]
      */
-    public function getRdvPatient(): Collection
+    public function getPriseRdvs(): Collection
     {
-        return $this->rdvPatient;
+        return $this->priseRdvs;
     }
 
-    public function addRdvPatient(Patient $rdvPatient): self
+    public function addPriseRdv(PriseRdv $priseRdv): self
     {
-        if (!$this->rdvPatient->contains($rdvPatient)) {
-            $this->rdvPatient[] = $rdvPatient;
-            $rdvPatient->addRendezVou($this);
+        if (!$this->priseRdvs->contains($priseRdv)) {
+            $this->priseRdvs[] = $priseRdv;
+            $priseRdv->setIdDocteur($this);
         }
 
         return $this;
     }
 
-    public function removeRdvPatient(Patient $rdvPatient): self
+    public function removePriseRdv(PriseRdv $priseRdv): self
     {
-        if ($this->rdvPatient->removeElement($rdvPatient)) {
-            $rdvPatient->removeRendezVou($this);
+        if ($this->priseRdvs->removeElement($priseRdv)) {
+            // set the owning side to null (unless already changed)
+            if ($priseRdv->getIdDocteur() === $this) {
+                $priseRdv->setIdDocteur(null);
+            }
         }
 
         return $this;
     }
+
+    
 }

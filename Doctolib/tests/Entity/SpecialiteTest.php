@@ -17,11 +17,20 @@ class SpecialiteTest extends KernelTestCase{
         $specialite=(new Specialite)->setNom($nom);
         return $specialite;
     }
-
+////////////////////////// GETTERS AND SETTERS
     public function testGandSNom(){
         $specialite= $this->getSpecialite('pédiatrie');
         $specialite->setNom('pédiatrie');
         $this->assertEquals('pédiatrie', $specialite->getNom());
     }
+
+////////////////////////// ASSERTS
+    public function testNomRempli(){
+        $specialite= $this->getSpecialite("");
+        $errors = $this->validator->validate($specialite);
+        $this->assertCount(1, $errors);
+        $this->assertEquals("Le libellé est obligatoire.", $errors[0]->getMessage(), "Test echec sur le methode : testNotValidBlankPrenom");
+    }
+
 }
 ?>
