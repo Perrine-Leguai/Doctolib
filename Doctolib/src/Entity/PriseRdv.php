@@ -28,12 +28,12 @@ class PriseRdv
     private $date;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Docteur::class, inversedBy="priseRdvs")
+     * @ORM\ManyToOne(targetEntity=Docteur::class, inversedBy="priseRdvs", cascade={"persist", "remove"})
      */
     private $id_docteur;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Patient::class, inversedBy="priseRdvs")
+     * @ORM\ManyToOne(targetEntity=Patient::class, inversedBy="priseRdvs", cascade={"persist", "remove"})
      */
     private $idPatient;
 
@@ -54,24 +54,24 @@ class PriseRdv
         return $this;
     }
 
-    public function getIdDocteur(): ?docteur
+    public function getIdDocteur(): ?Docteur
     {
         return $this->id_docteur;
     }
 
-    public function setIdDocteur(?docteur $id_docteur): self
+    public function setIdDocteur(?Docteur $id_docteur): self
     {
         $this->id_docteur = $id_docteur;
 
         return $this;
     }
 
-    public function getIdPatient(): ?patient
+    public function getIdPatient(): ?Patient
     {
         return $this->idPatient;
     }
 
-    public function setIdPatient(?patient $idPatient): self
+    public function setIdPatient(?Patient $idPatient): self
     {
         $this->idPatient = $idPatient;
 

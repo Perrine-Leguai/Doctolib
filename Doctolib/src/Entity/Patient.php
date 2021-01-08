@@ -15,12 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Patient extends User
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    
 
     /**
      * @ORM\Column(type="string", length=15)
@@ -54,7 +49,7 @@ class Patient extends User
     private $ville;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      * @Assert\NotBlank(message="Champ obligatoire")
      * @Assert\Regex(pattern="/^[0-9]{4,6}$/", message="Veuillez saisir un code postal correct")
      */
@@ -73,7 +68,7 @@ class Patient extends User
     private $telephone;
 
     /**
-     * @ORM\OneToMany(targetEntity=PriseRdv::class, mappedBy="idPatient")
+     * @ORM\OneToMany(targetEntity=PriseRdv::class, mappedBy="idPatient", cascade={"persist", "remove"})
      */
     private $priseRdvs;
 
@@ -84,10 +79,7 @@ class Patient extends User
         $this->priseRdvs = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    
 
     public function getNumeroCarteVitale(): ?string
     {
@@ -149,12 +141,12 @@ class Patient extends User
         return $this;
     }
 
-    public function getCodePostal(): ?int
+    public function getCodePostal(): ?string
     {
         return $this->codePostal;
     }
 
-    public function setCodePostal(?int $codePostal): self
+    public function setCodePostal(?string  $codePostal): self
     {
         $this->codePostal = $codePostal;
 

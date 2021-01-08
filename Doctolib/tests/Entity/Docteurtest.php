@@ -20,8 +20,24 @@ class DocteurTest extends KernelTestCase{
         $docteur=(new Docteur)->setNumeroOrdre($numeroOrdre)->setNom($nom)->setPrenom($prenom)->setAdresseTravail($adresseTravail)->setCodePostal($codePostal)->setVille($ville)->setEmail($email)->setTelephone($telephone)->setLienSiteInternet($lienSiteInternet);
         return $docteur;
     }
+    private function getUser(string $pseudo=null, string $mdp, string $numeroOrdre=null,string $nom, string $prenom, string $adresseTravail, int  $codePostal=null, string $ville, string $email, string $telephone=null){
+        $user = (new Docteur())->setUsername('gentilDoc')->setPassword('1111')->setNumeroOrdre('123456789')->setNom('NomFamille')->setPrenom('David')->setAdresseTravail("20 rue du pré")->setCodePostal('13000')->setVille('Marseille')->setEmail('jeanjean@gm.com')->setTelephone('0607080910');
+        return $user;
+    }
 
 ///////////////////////// GETTERS AND SETTERS
+    public function testGandSPseudo(){
+        $user= $this->getUser('Jeanjean', '1111', '123456789', 'NomFamille', 'David', "20 rue du pré", 13000, 'Marseille', 'jeanjean@gm.com', '0607080910');
+        $user->setUsername('Jeanjean');
+        $this->assertEquals('Jeanjean', $user->getUsername());
+    }
+
+    public function testGandSMdp(){
+        $user= $this->getUser('Jeanjean', '1111', '123456789', 'NomFamille', 'David', "20 rue du pré", 13000, 'Marseille', 'jeanjean@gm.com', '0607080910');
+        $user->setPassword('1111');
+        $this->assertEquals('1111', $user->getPassword());
+    }
+
     public function testGandSNumeroOrdre(){
         $docteur = $this->getDocteur('123456789', 'dupont', 'jeanjean', '26 rue du pré', 21850, 'Saint Apollinaire', 'jeanjean@dupont.org','0607080910', 'www.jeanjeandoc.com');
         $docteur->setNumeroOrdre('123456789');
@@ -160,7 +176,7 @@ class DocteurTest extends KernelTestCase{
         $specialite= (new Specialite())->setNom('podologie');
         $docteur->addSpecialite($specialite);
         $this->assertCount(1, $docteur->getSpecialites());
-        // $this->assertEquals($docteur, $specialite->getLibelle());
+        $this->assertEquals($docteur, $specialite->getDocteurs()[0]);
     }
 
     public function testRemoveSpecialite(){

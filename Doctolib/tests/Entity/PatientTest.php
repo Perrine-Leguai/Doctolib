@@ -3,9 +3,10 @@
 namespace App\Tests\Entity;
 
 use App\Entity\Patient;
+use App\Entity\PriseRdv;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Constraints\RegexValidator;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class PatientTest extends KernelTestCase{
     private $validator;
@@ -19,7 +20,22 @@ class PatientTest extends KernelTestCase{
         $patient=(new Patient)->setNumeroCarteVitale($numeroCarteVitale)->setNom($nom)->setPrenom($prenom)->setAdresse($adresse)->setVille($ville)->setCodePostal($codePostal)->setEmail($email)->setTelephone($telephone);
         return $patient;
     }
+    private function getUser(string $pseudo=null, string $mdp, string $numeroCarteVitale=null,string $nom, string $prenom, string $adresse, string $ville, int  $codePostal=null, string $email, string $telephone=null){
+        $user = (new Patient)->setUsername('gentilDoc')->setPassword('1111')->setNumeroCarteVitale('123456789')->setNom('NomFamille')->setPrenom('David')->setAdresse("20 rue du pré")->setVille('Marseille')->setCodePostal('13000')->setEmail('jeanjean@gm.com')->setTelephone('0607080910');
+        return $user;
+    }
 ////////////////////////// GETTERS AND SETTERS
+    public function testGandSPseudo(){
+        $user = $this->getUser('Jeanjean', '1111','192115915412315', 'dupont', 'jeanjean', '26 rue du pré', 'Saint Apollinaire', 21850, 'jeanjean@dupont.org', '0607080910');
+        $user->setUsername('Jeanjean');
+        $this->assertEquals('Jeanjean', $user->getUsername());
+    }
+
+    public function testGandSMdp(){
+        $user = $this->getUser('Jeanjean', '1111','192115915412315', 'dupont', 'jeanjean', '26 rue du pré', 'Saint Apollinaire', 21850, 'jeanjean@dupont.org', '0607080910');
+        $user->setPassword('1111');
+        $this->assertEquals('1111', $user->getPassword());
+    }
     public function testGandSNumeroCarteVitale(){
         $patient = $this->getPatient('192115915412315', 'dupont', 'jeanjean', '26 rue du pré', 'Saint Apollinaire', 21850, 'jeanjean@dupont.org', '0607080910');
         $patient->setNumeroCarteVitale('192115915412315');
@@ -66,6 +82,29 @@ class PatientTest extends KernelTestCase{
         $patient = $this->getPatient('192115915412315', 'dupont', 'jeanjean', '26 rue du pré', 'Saint Apollinaire', 21850, 'jeanjean@dupont.org', '0607080910');
         $patient->setTelephone('0607080910');
         $this->assertEquals('0607080910', $patient->getTelephone());
+    }
+///////////////////////////METHODES D'ASSOCIATION
+
+    public function testGetPriseRdv(){
+        $patient = $this->getPatient('192115915412315', 'dupont', 'jeanjean', '26 rue du pré', 'Saint Apollinaire', 21850, 'jeanjean@dupont.org', '0607080910');
+        $this->assertCount(0, $patient->getPriseRdvs());
+    }
+
+    public function testAddPriseRdv(){
+        $patient = $this->getPatient('123456789', 'dupont', 'jeanjean', '26 rue du pré',  'Saint Apollinaire',21850, 'jeanjean@dupont.org','0607080910', 'www.jeanjeandoc.com');
+        $priseRdv= (new PriseRdv())->setDate(new \DateTime('2020-12-17 14:25:30'));
+        $patient->addPriseRdv($priseRdv);
+        $this->assertCount(1, $patient->getPriseRdvs());
+        $this->assertEquals($patient, $priseRdv->getIdPatient());
+    }
+
+    public function testRemovePriseRdv(){
+        $patient = $this->getPatient('123456789', 'dupont', 'jeanjean', '26 rue du pré',  'Saint Apollinaire',21850, 'jeanjean@dupont.org','0607080910', 'www.jeanjeandoc.com');
+        $priseRdv= (new PriseRdv())->setDate(new \DateTime('2020-12-17 14:25:30'));
+        $patient->addPriseRdv($priseRdv);
+        $this->assertCount(1, $patient->getPriseRdvs());
+        $patient->removePriseRdv($priseRdv);
+        $this->assertCount(0, $patient->getPriseRdvs());
     }
 
 ////////////////////////// ASSERTS

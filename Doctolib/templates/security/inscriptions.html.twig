@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription- Doctolib{% endblock %}
+
+{% block body %}
+
+    <h1 class="center"> INSCRIPTIONS </h1>
+    <div id="form-container" class="11 row">
+      <div id="formulairePatient">
+        <form method="post">
+          <div class="col-6 offset-3">
+              <h1 class="h3 mb-3 mt-3 font-weight-normal">Rejoins-nous donc !</h1>
+              {{form_start(form)}}
+              {{form_row(form.pseudo, {'attr': {'placeholder':'Jeanjean59'}})}}
+              {{form_row(form.profil, {'attr': {'placeholder':'admin ou user'}})}}
+              {{form_row(form.password, {'label':'Mot de passe'})}}
+              {{form_row(form.confirmPassword)}}
+              
+              <button class="btn btn-outline-info col-4 offset-4 mt-4" type="submit">
+                  S'inscrire
+              </button>
+              {{form_end(form)}}
+
+                  <div class="checkbox mb-3">
+                      <label>
+                          <input type="checkbox" name="_remember_me"> Remember me
+                      </label>
+                  </div>
+              
+
+              
+          </div>
+        </form>
+      </div>
+      <div id="formulairePatient">
+      <form method="post">
+        <div class="col-6 offset-3">
+            <h1 class="h3 mb-3 mt-3 font-weight-normal">Rejoins-nous donc !</h1>
+            {{form_start(form)}}
+            {{form_row(form.pseudo, {'attr': {'placeholder':'Jeanjean59'}})}}
+            {{form_row(form.profil, {'attr': {'placeholder':'admin ou user'}})}}
+            {{form_row(form.password, {'label':'Mot de passe'})}}
+            {{form_row(form.confirmPassword)}}
+            
+            <button class="btn btn-outline-info col-4 offset-4 mt-4" type="submit">
+                S'inscrire
+            </button>
+            {{form_end(form)}}
+  
+                <div class="checkbox mb-3">
+                    <label>
+                        <input type="checkbox" name="_remember_me"> Remember me
+                    </label>
+                </div>
+            
+
+            
+        </div>
+      </form>
+    </div>
+
+    </div>
+
+
+
+    
+{% endblock %}<div class="bg-image hover-overlay hover-zoom hover-shadow ripple">
+  <img src="https://mdbootstrap.com/img/new/fluid/city/113.jpg" class="w-100" />
+  <a href="#!">
+    <div class="mask" style="background-color: rgba(57, 192, 237, 0.2)"></div>
+  </a>
+</div>

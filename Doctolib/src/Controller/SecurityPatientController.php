@@ -2,13 +2,39 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Patient;
+use App\Form\InscriptionPatientType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class SecurityPatientController extends AbstractController
 {
+    /**
+     * @Route("/security/inscriptionPatient", name="inscriptionPatient_security")
+     */
+    public function signin(Request $request, EntityManagerInterface $manager, UserPasswordEncoderInterface $encoder){
+        $patient = new Patient();
+        $formPatient=$this->createForm(InscriptionPatientType::class, $patient);
+        $formPatient->handleRequest($request);
+        if($formPatient->isSubmitted() && $formPatient->isValid()){
+            $hash= $encoder->encodePassword($patient, $patient->getPassword());
+            $patient->setPassword($hash);
+            $manager->persist($patient);
+            $manager->flush();
+            
+            return $this->redirectToRoute('app_login');
+        }
+        return $this->render('security/inscriptions.html.twig', [
+            'formPatient' => $formPatient->createView()
+        ]);
+    }
+    
+    
     /**
      * @Route("/login", name="app_login")
      */

@@ -2,13 +2,39 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Docteur;
+use App\Form\InscriptionDocteurType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class SecurityDocteurController extends AbstractController
 {
+    /**
+     * @Route("/security/inscriptionDocteur", name="inscriptionDocteur_security")
+     */
+    public function signin(Request $request, EntityManagerInterface $manager, UserPasswordEncoderInterface $encoder){
+        $docteur = new Docteur();
+        $formDoc=$this->createForm(InscriptionDocteurType::class, $docteur);
+        $formDoc->handleRequest($request);
+        if($formDoc->isSubmitted() && $formDoc->isValid()){
+            $hash= $encoder->encodePassword($docteur, $docteur->getPassword());
+            $docteur->setPassword($hash);
+            $manager->persist($docteur);
+            $manager->flush();
+            
+            return $this->redirectToRoute('app_login');
+        }
+        return $this->render('security/inscriptions.html.twig', [
+            'formDocteur' => $formDoc->createView()
+        ]);
+    }
+    
+    
     /**
      * @Route("/login", name="app_login")
      */
@@ -23,7 +49,7 @@ class SecurityDocteurController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('security/loginDocteur.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+        return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
     }
 
     /**

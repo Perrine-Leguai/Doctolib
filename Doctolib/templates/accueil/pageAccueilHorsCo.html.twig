@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil- Doctolib{% endblock %}
+
+{% block body %}
+    <div id="main" class="container d-flex justify-content-around" >
+        <div class="card  d-flex justify-content-center mt-5 offest-2" >
+            <div class="card-body">
+                <h3 class="card-title mb-5 mt-4 text-primary">Bienvenu.e.s sur Doctolib</h3>
+                <h5 class="card-subtitle mb-2 text-muted">Le site de gestion des rendez vous médicaux</h5>
+                <p class="card-text mt-2">Prenez en un clic, rendez vous au près du practicien qu'il vous faut.<br> Vous êtes déjà plus de {{nombre_de_patients}} patient.e.s et {{nombre_de_docteurs}} docteurs à nous faire confiance !</p>
+                <a href="#{# {{path('/security/inscription_security')}}#}" class="card-link">Inscription</a>
+                <a href="#{#{{path('/security/connexion_security')}}#}" class="card-link">Connexion</a> 
+            </div>
+        </div>
+    </div>
+{% endblock %}

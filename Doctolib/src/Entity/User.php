@@ -2,14 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\MappedSuperclass;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- */
-class User implements UserInterface
+/** @MappedSuperclass */
+
+class  User implements UserInterface
 {
     /**
      * @ORM\Id
@@ -33,6 +36,8 @@ class User implements UserInterface
      * @ORM\Column(type="string")
      */
     protected $password;
+
+    
 
     public function getId(): ?int
     {

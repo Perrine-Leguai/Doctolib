@@ -14,12 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Docteur extends User
 
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    
 
     /**
      * @ORM\Column(type="string", length=9)
@@ -47,7 +42,7 @@ class Docteur extends User
     private $adresseTravail;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      * @Assert\NotBlank(message="Champ obligatoire")
      * @Assert\Regex(pattern="/^[0-9]{5,6}$/", message="Veuillez saisir un code postal correct")
      */
@@ -78,16 +73,14 @@ class Docteur extends User
     private $lienSiteInternet;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Specialite::class, mappedBy="libelle")
+     * @ORM\ManyToMany(targetEntity=Specialite::class, mappedBy="docteurs")
      */
     private $specialites;
 
     /**
-     * @ORM\OneToMany(targetEntity=PriseRdv::class, mappedBy="id_docteur")
+     * @ORM\OneToMany(targetEntity=PriseRdv::class, mappedBy="id_docteur",  cascade={"persist", "remove"})
      */
     private $priseRdvs;
-
-    
 
     public function __construct()
     {
@@ -95,10 +88,7 @@ class Docteur extends User
         $this->priseRdvs = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    
 
     public function getNumeroOrdre(): ?string
     {
@@ -148,12 +138,12 @@ class Docteur extends User
         return $this;
     }
 
-    public function getCodePostal(): ?int
+    public function getCodePostal(): ?string
     {
         return $this->codePostal;
     }
 
-    public function setCodePostal(?int $codePostal): self
+    public function setCodePostal(?string $codePostal): self
     {
         $this->codePostal = $codePostal;
 
@@ -220,7 +210,7 @@ class Docteur extends User
     {
         if (!$this->specialites->contains($specialite)) {
             $this->specialites[] = $specialite;
-            $specialite->addLibelle($this);
+            $specialite->addDocteur($this);
         }
 
         return $this;
@@ -229,7 +219,7 @@ class Docteur extends User
     public function removeSpecialite(Specialite $specialite): self
     {
         if ($this->specialites->removeElement($specialite)) {
-            $specialite->removeLibelle($this);
+            $specialite->removeDocteur($this);
         }
 
         return $this;

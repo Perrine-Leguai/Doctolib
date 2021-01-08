@@ -27,6 +27,7 @@ class PriseRdvTest extends KernelTestCase{
         $priseRdv->setDate(new \DateTime("2020-11-05"));
         $this->assertEquals(new \DateTime("2020-11-05"), $priseRdv->getDate());
     }
+
 ////////////////////////// ASSERTS
     public function testDateIsValide(){
         $priseRdv = $this->getPriseRdv(null);

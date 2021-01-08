@@ -27,13 +27,13 @@ class Specialite
     private $nom;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Docteur::class, inversedBy="specialites")
+     * @ORM\ManyToMany(targetEntity=Docteur::class, inversedBy="specialites", cascade={"persist", "remove"})
      */
-    private $libelle;
+    private $docteurs;
 
     public function __construct()
     {
-        $this->libelle = new ArrayCollection();
+        $this->docteurs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -56,23 +56,24 @@ class Specialite
     /**
      * @return Collection|docteur[]
      */
-    public function getLibelle(): Collection
+    public function getDocteurs(): Collection
     {
-        return $this->libelle;
+        return $this->docteurs;
     }
 
-    public function addLibelle(docteur $libelle): self
+    public function addDocteur(Docteur $docteur): self
     {
-        if (!$this->libelle->contains($libelle)) {
-            $this->libelle[] = $libelle;
+        if (!$this->docteurs->contains($docteur)) {
+            $this->docteurs[] = $docteur;
+            $docteur->addSpecialite($this);
         }
 
         return $this;
     }
 
-    public function removeLibelle(docteur $libelle): self
+    public function removeDocteur(docteur $docteur): self
     {
-        $this->libelle->removeElement($libelle);
+        $this->docteurs->removeElement($docteur);
 
         return $this;
     }
