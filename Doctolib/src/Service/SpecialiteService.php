@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
+use App\Entity\Docteur;
 use App\Entity\Specialite;
+use App\Mapper\DocteurMapper;
 use App\Mapper\SpecialiteMapper;
 use App\Repository\DocteurRepository;
 use App\Repository\SpecialiteRepository;
@@ -16,12 +18,13 @@ class SpecialiteService {
     private $specialiteMapper;
     
 
-    public function __construct(EntityManagerInterface $manager, SpecialiteMapper $mapper, SpecialiteRepository $specialiteRepository, DocteurRepository $docteurRepository){
+    public function __construct(EntityManagerInterface $manager, SpecialiteMapper $mapper, SpecialiteRepository $specialiteRepository, DocteurRepository $docteurRepository, DocteurMapper $docteurMapper){
 
         $this->entityManager        = $manager;
         $this->specialiteMapper     = $mapper;
         $this->specialiteRepository = $specialiteRepository;
         $this->docteurRepository    = $docteurRepository;
+        $this->docteurMapper        = $docteurMapper;
     }
 
     public function searchAll(){
@@ -36,18 +39,23 @@ class SpecialiteService {
         }catch(DriverException $e){
             throw new SpecialiteServiceException("un pb technique est arrivé");
         }
-    }
+    } 
 
-    public function searchById(int $id){
+    public function searchBySpecialite(string $specialite){
         try{
-            $specialite = $this->specialiteRepository->find($id);
-            return  $this->specialiteMapper->transformeEntityToSpecialiteDto($specialite);
+            $spe=$this->specialiteRepository->findOneBy(["nom" => $specialite]);
+            $docteurs= $spe->getDocteurs();
+            foreach($docteurs as $docteur){
+                
+                $doc=$this->docteurRepository->find($docteur->getId());
+                $docs[]= $this->docteurMapper->transformeEntityToDocteurDto($doc);
+             }
+            return $docs ;
         }catch(DriverException $e){
-            throw new SpecialiteServiceException("un pb technique est arrivé");
+            throw new DocteurServiceException("un pb technique est arrivé");
         }
-    }
-    
-    
+    }  
+
     public function delete(Specialite $specialite){
         try{
             $this->entityManager->remove($specialite);
@@ -66,7 +74,6 @@ class SpecialiteService {
                 foreach($docteurId as $dId){
                     $docteurs[]=$this->docteurRepository->find($dId);
                 }
-                
             }
             
             $specialite= $this->specialiteMapper->transformeSpecialiteDtoToEntity($specialiteDTO, $specialite, $docteurs);
@@ -78,3 +85,11 @@ class SpecialiteService {
     }
 }
 
+    // public function searchById(int $id){
+    //     try{
+    //         $specialite = $this->specialiteRepository->find($id);
+    //         return  $this->specialiteMapper->transformeEntityToSpecialiteDto($specialite);
+    //     }catch(DriverException $e){
+    //         throw new SpecialiteServiceException("un pb technique est arrivé");
+    //     }
+    // }

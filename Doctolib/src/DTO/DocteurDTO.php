@@ -1,25 +1,162 @@
 <?php
 
 namespace App\DTO;
+use OpenApi\Annotations as OA;
 
+
+/**
+ * @OA\Schema(
+ *     title="DocteurDTO",
+ *     @OA\Xml(
+ *         name="DocteurDTO"
+ *     )
+ * ) */
 class DocteurDTO{
     
-     
+    /**
+     * @OA\Property(
+     *     title="ID",
+     *     description="ID",
+     *     type="number",
+     *     format="int64",
+     * )
+     *
+     * @var integer
+     */ 
     private $id;
+    /**
+     * @OA\Property(
+     *     title="username",
+     *     description="username, obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $username;
+    /**
+     * @OA\Property(
+     *     title="password",
+     *     description="password, obligatoire",
+     *     type="string",
+     *     format="password",
+     * )
+     *
+     * @var string
+     */ 
     private $password;
 
+    /**
+     * @OA\Property(
+     *     title="numeroOrdre",
+     *     description="numero d'ordre, unique et propre à chaque médecin, obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $numeroOrdre;
+    /**
+     * @OA\Property(
+     *     title="nom",
+     *     description="nom, obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $nom;
+    /**
+     * @OA\Property(
+     *     title="prenom",
+     *     description="prenom, obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $prenom;
-    private $adresseTravail;
+    /**
+     * @OA\Property(
+     *     title="adresseTravail",
+     *     description="adresse de travail du docteur, obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
+    private $adresseTravail;/**
+    * @OA\Property(
+    *     title="codePostal",
+    *     description="code postal de l'adresse de travail, obligatoire",
+    *     type="string",
+    * )
+    *
+    * @var string
+    */ 
     private $codePostal;
+    /**
+     * @OA\Property(
+     *     title="ville",
+     *     description="ville de l'adresse de travail, obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $ville;
+    /**
+     * @OA\Property(
+     *     title="email",
+     *     description="email du docteur, obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $email;
+    /**
+     * @OA\Property(
+     *     title="téléphone",
+     *     description="téléphone professionnel du docteur",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $telephone;
+    /**
+     * @OA\Property(
+     *     title="lien du site internet",
+     *     description="lien du site internet du docteur",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $lienSiteInternet;
     
+    /**
+     * @OA\Property(
+     *     title="specialites",
+     *     description="tableaux des spécialités par docteur",
+     *     type= "array",
+     *     items = {"type"="object"}
+     * )
+     *
+     * @var integer
+     */ 
     private $specialites;
+    /**
+     * @OA\Property(
+     *     title="rdv",
+     *     description="tableaux des rdvs par docteurs",
+     *     type= "array",
+     *     items = {"type"="object"}         
+     * )
+     *
+     * @var integer
+     */ 
     private $priseRdvs;
 
 
@@ -230,7 +367,7 @@ class DocteurDTO{
     /**
      * Get the value of specialites
      */ 
-    public function getSpecialites()
+    public function getSpecialites() :array
     {
         return $this->specialites;
     }
@@ -240,7 +377,7 @@ class DocteurDTO{
      *
      * @return  self
      */ 
-    public function setSpecialites($specialites)
+    public function setSpecialites(array $specialites)
     {
         $this->specialites = $specialites;
 

@@ -8,6 +8,7 @@ use App\DTO\PriseRdvDTO;
 use App\Entity\PriseRdv;
 use App\DTO\PriseRdvDTODTO;
 use FOS\RestBundle\View\View;
+use OpenApi\Annotations as OA;
 use App\Mapper\PriseRdvMapper;
 use App\Service\PriseRdvService;
 use App\Repository\PriseRdvRepository;
@@ -42,40 +43,54 @@ class PriseRdvRestController extends AbstractFOSRestController
         
     }
 
-
     /**
-     * @Get(PriseRdvRestController::URI_PRISERDV_COLLECTION)
-     */
-    public function searchAll()
-    {
-        try{
-            $priseRdvs = $this->priseRdvService->searchAll();
-        }catch(PriseRdvServiceException $e){
-            return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
-        }
-        if($priseRdvs){
-            return View::create($priseRdvs, Response::HTTP_OK , ["Content-type"   =>  "application/json"]);
-        }else{
-            return View::create($priseRdvs, Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
-        }
-
-    }
-
-
-    /**
-     * @Get(PriseRdvRestController::URI_PRISERDV_INSTANCE)
+     * Récupérer la liste des rendez vous par docteurs ou par patients
+     * @OA\Get(
+     *     path="/rdvs/{id}",
+     *     tags={"Liste des rdvs selon la personne connectée"},
+     *     summary="Trouve l'ensemble des rdvs d'un patient ou d'un docteur",
+     *     description="Retourne un tableau d'objets PriseRdv qui sera converti en tableau d'objets PriseRdvDTO, N'est accessible qu'à la personne connectée et uniquement ses rendez vous à elle. ",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id de la personne connectée",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/DocteurDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/DocteurDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Erreur de requete"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
+     * @Get(PriseRdvRestController::URI_PRISERDV_INSTANCE) //id de la personne connectée dans la barre de recherche
      *
      * @return Response
      */
     public function searchById(int $id){
         try{
-            $priseRdvDTO = $this->priseRdvService->searchById($id);
+            $_SESSION['role']="PATIENT";
+            if(isset($_SESSION['role']) && !empty($_SESSION['role'])){
+                            $priseRdvDTOs = $this->priseRdvService->searchById($id, $_SESSION['role']);
+            }
         }catch(PriseRdvServiceException $e){
             return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
         }
 
-        if($priseRdvDTO !=null){
-            return View :: create($priseRdvDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
+        if($priseRdvDTOs !=null){
+            return View :: create($priseRdvDTOs, Response::HTTP_OK, ["Content_type" => "application/json"]);
         }else{
             return View::create([], Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
         }
@@ -83,6 +98,30 @@ class PriseRdvRestController extends AbstractFOSRestController
      }
 
     /**
+     * @OA\Delete(
+     *     path="/rdvs/{id}",
+     *     tags={"Supprimer un PriseRdv"},
+     *     summary="Supprimer un rdv",
+     *     description="Uniquement accessible par le docteur en question, qui est sur le rdv",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Id du rdv a supprimer",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="number",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid id supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Nous ne trouvons pas de rdv avec cet id",
+     *     )
+     * )
      * @Delete(PriseRdvRestController::URI_PRISERDV_INSTANCE)
      *
      * @param int $id
@@ -101,6 +140,26 @@ class PriseRdvRestController extends AbstractFOSRestController
     }
 
     /**
+     * @OA\Post(
+     *     path="/rdvs",
+     *     tags={"Créer une PriseRdv"},
+     *     summary="Création d'1 objet PriseRdv",
+     *     description="Peut-^etre créé par le docteur ou le patient",
+     *     
+     *     @OA\Response(
+     *         response=405,
+     *         description="Input invalide"
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Création réussie"
+     *     ),
+     *     @OA\RequestBody(
+     *         description="DocteurDTO JSON Object",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/PriseRdvDTO")
+     *     )
+     * )
      * @Post(PriseRdvRestController::URI_PRISERDV_COLLECTION)
      * @ParamConverter("priseRdvDTO", converter="fos_rest.request_body")
      *
@@ -119,6 +178,35 @@ class PriseRdvRestController extends AbstractFOSRestController
     }
 
     /**
+     * @OA\Put(
+     *     path="/rdvs/{id}",
+     *     tags={"Modifier un PriseRdv"},
+     *     summary="modification de objet PriseRdv selon id",
+     *     description="Ne peut être réalisée que par le Docteur concerné",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id du rdv PriseRdv a modifier",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="number",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid user supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Docteur non trouvé"
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Mise à jour du Docteur",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/DocteurDTO")
+     *     )
+     * )
      * @Put(PriseRdvRestController::URI_PRISERDV_INSTANCE)
      * @ParamConverter("priseRdvDTO", converter="fos_rest.request_body")
      * @param PriseRdvDTO $priseRdvDTO
@@ -134,3 +222,21 @@ class PriseRdvRestController extends AbstractFOSRestController
     }
       
 }
+
+    // /**
+    //  * @Get(PriseRdvRestController::URI_PRISERDV_COLLECTION)
+    //  */
+    // public function searchAll()
+    // {
+    //     try{
+    //         $priseRdvs = $this->priseRdvService->searchAll();
+    //     }catch(PriseRdvServiceException $e){
+    //         return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+    //     }
+    //     if($priseRdvs){
+    //         return View::create($priseRdvs, Response::HTTP_OK , ["Content-type"   =>  "application/json"]);
+    //     }else{
+    //         return View::create($priseRdvs, Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
+    //     }
+
+    // }

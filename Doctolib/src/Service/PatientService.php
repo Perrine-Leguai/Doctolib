@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Patient;
+use App\Mapper\DocteurMapper;
 use App\Mapper\PatientMapper;
 use App\Repository\PatientRepository;
 use App\Repository\PriseRdvRepository;
@@ -16,39 +17,30 @@ class PatientService {
     private $patientRepository;
     private $priseRdvRepository;
     private $patientMapper;
+    private $docteurMapper;
     
 
-    public function __construct(EntityManagerInterface $manager, PatientMapper $mapper, patientRepository $patientRepository, PriseRdvRepository $priseRdvRepository){
+    public function __construct(EntityManagerInterface $manager, PatientMapper $mapper, patientRepository $patientRepository, PriseRdvRepository $priseRdvRepository, DocteurMapper $docteurMapper){
 
         $this->entityManager        = $manager;
         $this->patientMapper        = $mapper;
         $this->patientRepository    = $patientRepository;
         $this->priseRdvRepository   = $priseRdvRepository;
+        $this->docteurMapper        = $docteurMapper;
     }
 
-    public function searchAll(){
+    public function searchAllDocteurs($id){
         try{
-            $patients=$this->patientRepository->findAll();
-            //transformation de l'ensemble des patients
-            $patientsDTO = [];
-            foreach($patients as $patient){
-               $patientsDTO[]= $this->patientMapper->transformeEntityToPatientDto($patient);
+            $patient=$this->patientRepository->find($id);
+            $rdvs= $patient->getPriseRdvs();
+            foreach($rdvs as $rdv){
+               $docteurs[]= $this->docteurMapper->transformeEntityToDocteurDto($rdv->getIdDocteur());
             }
-            return $patientsDTO;
+            return $docteurs;
         }catch(DriverException $e){
             throw new PatientServiceException("un pb technique est arrivé");
         }
-    }
-
-    
-    public function searchById(int $id){
-            try{
-                $patient = $this->patientRepository->find($id);
-                return  $this->patientMapper->transformeEntityToPatientDto($patient);
-            }catch(DriverException $e){
-                throw new PatientServiceException("un pb technique est arrivé");
-            }
-        }
+    } 
 
 
     public function delete(Patient $patient){
@@ -62,19 +54,10 @@ class PatientService {
     }
 
     //permet de créer un nouveau Patient ET de faire les mises à jour
-    public function persist(){
+    public function persist($patient, $patientDTO){
         try{
-            $specialiteIds[]=$patientDTO->getSpecialite();
-            foreach ($specialiteIds as $specialiteId){
-                $specialites[]=$this->specialiteRepository->find($specialiteId);
-            }
-            $priseRdvIds[]=$patientDTO->getPriseRdv();
-            foreach ($priseRdvIds as $PriseRdvId){
-                $priserdvs[]=$this->specialiteRepository->find($priseRdvIds);
-            }
-
-            $priseRdvs = $this->priserdvRepository->find($patientDTO->getPriseRdvs());
-            $patient= $this->patientMapper->transformePatientDtoToPatientEntity($patientDTO, $patient, $specialites, $priseRdvs);
+            
+            $patient= $this->patientMapper->transformePatientDtoToPatientEntity($patientDTO, $patient);
             $this->entityManager->persist($patient);
             $this->entityManager->flush();
         }catch(DriverException $e){
@@ -82,8 +65,17 @@ class PatientService {
         }
     }
 
-    
-    
-
 }
 
+//public function searchByIdDocteur(int $id){
+    //         try{
+    //             $rdvDoc = $this->priseRdvRepository->findBy(["id_docteur" => "$id"]);
+    //         foreach($rdvDoc as $rdv){
+    //             $patient = $this->patientRepository->find($rdv->getIdPatient());
+    //             $patients[] = $this->patientMapper->transformeEntityToPatientDto($patient);
+    //         }
+    //             return  $patient;
+    //         }catch(DriverException $e){
+    //             throw new PatientServiceException("un pb technique est arrivé");
+    //         }
+    //     }

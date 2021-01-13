@@ -7,6 +7,7 @@ use App\Entity\Patient;
 use App\Mapper\PatientMapper;
 use FOS\RestBundle\View\View;
 use App\Service\PatientService;
+use OpenApi\Annotations as OA;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\Get;
 use FOS\RestBundle\Controller\Annotations\Put;
@@ -29,55 +30,95 @@ class PatientRestController extends AbstractFOSRestController
 
     const URI_PATIENT_COLLECTION = "/patients";
     const URI_PATIENT_INSTANCE ="/patients/{id}";
+    const URI_PATIENT_COLLECTION_DOCTEURS = "/patients/docteurs/{id}";
 
     public function __construct(EntityManagerInterface $entityManager, PatientMapper $mapper, patientService $patientService){
         $this->patientService       = $patientService;
         $this->entityManager        = $entityManager;
         $this->patientMapper        = $mapper;
         
-    }
-
-
-    /**
-     * @Get(PatientRestController::URI_PATIENT_COLLECTION)
-     */
-    public function searchAll()
-    {
-        try{
-            $patients = $this->patientService->searchAll();
-        }catch(PatientServiceException $e){
-            return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
-        }
-        if($patients){
-            return View::create($patients, Response::HTTP_OK , ["Content-type"   =>  "application/json"]);
-        }else{
-            return View::create($patients, Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
-        }
-
-    }
-
+    } 
 
     /**
-     * @Get(PatientRestController::URI_PATIENT_INSTANCE)
-     *
+     *  Récupérer la liste des Patients d'un docteur précisé par l'id
+     * @OA\Get(
+     *  path="/patients/docteurs/{id}",
+     *     tags={"Patients selon id Docteur"},
+     *     summary="Trouve l'ensemble des patients inscrits sur la bdd, ayant au moins un rendez vous avec le Docteur précisé par l'id dans l'URL",
+     *     description="Retourne un tableau d'objets Patient qui sera converti en tableau d'objets PatientDTO ",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id du Docteur dont on cherche la liste des patients",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="number",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/PatientDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/PatientDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Aucun docteur ne coreespond à votre requête"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
+     * @Get(PatientRestController::URI_PATIENT_COLLECTION_DOCTEURS)
      * @return Response
      */
-    public function searchById(int $id){
+    public function searchAllDocteurs(int $id){
         try{
-            $patientDTO = $this->patientService->searchById($id);
+            // $_SESSION['role']= 'DOCTEUR';
+            // if(isset($_SESSION['role'])){
+                $docteurDTO = $this->patientService->searchAllDocteurs($id);
+            //}
         }catch(PatientServiceException $e){
             return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
         }
 
-        if($patientDTO !=null){
-            return View :: create($patientDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
+        if($docteurDTO !=null){
+            return View :: create($docteurDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
         }else{
             return View::create([], Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
         }
         
     }
 
+// SUPPRESSION DU COMPTE, NE PEUT ÊTRE FAIT QUE PAR LE PATIENT LUI MM
     /**
+     *  @OA\Delete(
+     *     path="/patients/{id}",
+     *     tags={"Supprimer un Patient"},
+     *     summary="Supprimer un patient",
+     *     description="Uniquement accessible par le patient en question. L'ID se récupère automatiquement à la connexion du patient dans un $_SESSION",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Id du patient à supprimer",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="number",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid id supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Nous ne trouvons pas de patient avec cet id"
+     *     )
+     * )
+     * 
      * @Delete(PatientRestController::URI_PATIENT_INSTANCE)
      *
      * @param int $id
@@ -95,21 +136,38 @@ class PatientRestController extends AbstractFOSRestController
         }
     }
 
+//INSCRIPTION SUR LE SITE
     /**
+     * @OA\Post(
+     *     path="/patients",
+     *     tags={"Créer un Patient"},
+     *     summary="Création d'1 patient",
+     *     description="Créationd u patient en inscription sur le site",
+     *     
+     *     @OA\Response(
+     *         response=405,
+     *         description="Input invalide"
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Création réussie"
+     *     ),
+     *     @OA\RequestBody(
+     *         description="PatientDTO JSON Object",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/PatientDTO")
+     *     )
+     * )
      * @Post(PatientRestController::URI_PATIENT_COLLECTION)
-     * @ParamConverter("patientDto", converter="fos_rest.request_body")
+     * @ParamConverter("patientDTO", converter="fos_rest.request_body")
      *
      * @param Patient $patient
      * @return void
      */
     public function create(PatientDTO $patientDTO){
         try{
-            $patient= new PatientService();
-            $patient->persist(new Patient(), $patientDTO);
-            //  $categorie= $this->categorieRepository->find($patientDto->getCategorie());
-            //  $patient= $this->PatientMapper->transformPatientDtoToPatientEntity($patientDTO, $categorie);
-            // $this->entityManager->persist($patient);
-            // $this->entityManager->flush();
+            
+            $this->patientService->persist(new Patient(), $patientDTO);
             
              return View :: create([], Response::HTTP_CREATED, ["Content_type" => "application/json"]);
 
@@ -118,7 +176,37 @@ class PatientRestController extends AbstractFOSRestController
         }
     }
 
+//MODIFICATION DU COMPTE, NE PEUT ÊTRE FAITE QUE PAR LE PATIENT LUI MM
     /**
+      * @OA\Put(
+     *     path="/patients/{id}",
+     *     tags={"Modifier un Patient"},
+     *     summary="modification de objet Patient selon id",
+     *     description="Ne peut être réalisée que par le Patient concerné",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id du patient à modifier, qui est aussi l'id du patient connecté",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="number",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid id supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Patient non trouvé"
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Mise à jour du Patient",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/PatientDTO")
+     *     )
+     * )
      * @Put(PatientRestController::URI_PATIENT_INSTANCE)
      * @ParamConverter("patientDTO", converter="fos_rest.request_body")
      * @param PatientDTO $patientDTO
@@ -134,3 +222,22 @@ class PatientRestController extends AbstractFOSRestController
     }
       
 }
+
+
+    // /**
+    //  * @Get(PatientRestController::URI_PATIENT_COLLECTION)
+    //  */
+    // public function searchAll()
+    // {
+    //     try{
+    //         $patients = $this->patientService->searchAll();
+    //     }catch(PatientServiceException $e){
+    //         return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+    //     }
+    //     if($patients){
+    //         return View::create($patients, Response::HTTP_OK , ["Content-type"   =>  "application/json"]);
+    //     }else{
+    //         return View::create($patients, Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
+    //     }
+
+    // }

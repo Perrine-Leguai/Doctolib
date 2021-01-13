@@ -28,24 +28,20 @@ class PriseRdvService {
         $this->docteurRepository = $docteurRepository;
     }
 
-    public function searchAll(){
-        try{
-            $priseRdvs=$this->priseRdvRepository->findAll();
-            //transformation de l'ensemble des PriseRdvs
-            $priseRdvsDTO = [];
-            foreach($priseRdvs as $priseRdv){
-               $priseRdvsDTO[]= $this->priseRdvMapper->transformeEntityToPriseRdvDto($priseRdv);
-            }
-            return $priseRdvsDTO;
-        }catch(DriverException $e){
-            throw new priseRdvServiceException("un pb technique est arrivé");
-        }
-    }
+    
 
-    public function searchById(int $id){
+    public function searchById(int $id, $session){
         try{
-            $priseRdv = $this->priseRdvRepository->find($id);
-            return  $this->priseRdvMapper->transformeEntityToPriseRdvDto($priseRdv);
+            if($session=='PATIENT'){
+                $priseRdvs = $this->priseRdvRepository->findBy( ["idPatient" => $id]);
+            }
+            if($session=='DOCTEUR'){
+                $priseRdv = $this->priseRdvRepository->findBy( ["id_docteur" => $id]);
+            }
+            foreach($priseRdvs as $rdv){
+                $priseRdvPatientsouDocteurs[]=$this->priseRdvMapper->transformeEntityToPriseRdvDto($rdv);
+            }
+            return $priseRdvPatientsouDocteurs ;
         }catch(DriverException $e){
             throw new PriseRdvServiceException("un pb technique est arrivé");
         }
@@ -81,3 +77,16 @@ class PriseRdvService {
 
 }
 
+// public function searchAll(){
+//         try{
+//             $priseRdvs=$this->priseRdvRepository->findAll();
+//             //transformation de l'ensemble des PriseRdvs
+//             $priseRdvsDTO = [];
+//             foreach($priseRdvs as $priseRdv){
+//                $priseRdvsDTO[]= $this->priseRdvMapper->transformeEntityToPriseRdvDto($priseRdv);
+//             }
+//             return $priseRdvsDTO;
+//         }catch(DriverException $e){
+//             throw new priseRdvServiceException("un pb technique est arrivé");
+//         }
+//     }

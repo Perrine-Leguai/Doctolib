@@ -2,10 +2,39 @@
 
 namespace App\DTO;
 
-class SpecialiteDTO{
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Schema()
+ */
+class SpecialiteDTO{
+    /**
+     * @OA\Property(type="integer", format="int64")
+     *
+     * @var int
+     */
     private $id;
+    /**
+     * @OA\Property(
+     *     title="nom",
+     *     description="libelle de la specialite, , obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $nom;
+    
+    /**
+     * @OA\Property(
+     *     title="docteurs",
+     *     description="tableaux des docteurs ayant cette spécialité",
+     *     type= "array",
+     *     items = {"type"="object"}
+     * )
+     *
+     * @var array
+     */ 
     private $docteurs;
 
     /**

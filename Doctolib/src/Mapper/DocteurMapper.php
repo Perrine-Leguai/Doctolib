@@ -10,8 +10,8 @@ use App\Entity\Specialite;
 class DocteurMapper{
 
     //permet de traduire en php les informations reçues en POST, Json
-    public function transformeDocteurDtoToDocteurEntity(DocteurDTO $docteurDTO, Docteur $docteur){ //$specialite,  $priseRdv){
-        
+    public function transformeDocteurDtoToDocteurEntity(DocteurDTO $docteurDTO, Docteur $docteur, $specialite){ 
+
         $docteur->setUsername($docteurDTO->getUsername())
                 ->setPassword($docteurDTO->getPassword())
                 ->setNumeroOrdre($docteurDTO->getNumeroOrdre())
@@ -22,10 +22,12 @@ class DocteurMapper{
                 ->setVille($docteurDTO->getVille())
                 ->setEmail($docteurDTO->getEmail())
                 ->setTelephone($docteurDTO->getTelephone())
-                ->setLienSiteInternet($docteurDTO->getLienSiteInternet())
-                ->addSpecialite(25);
-                // ->addSpecialite($specialite)
-                // ->addPriseRdv($priserdv);
+                ->setLienSiteInternet($docteurDTO->getLienSiteInternet());
+        foreach( $specialite as $spe){
+            $docteur->addSpecialite($spe);
+        }
+                
+              
 
     //est-ce qu'on envoie un tableau dans la fonction et pour each specialites as specialite on fait un setSpecialite ?
 
@@ -41,18 +43,10 @@ class DocteurMapper{
             $idsSpecialite[]=$specialite->getId();
         }
 
-        //récupère tous les rdvs
-        $priserdvs=$docteur->getPriseRdvs();
-        foreach($priserdvs as $priserdv){
-            $idsPriseRdvs[]=$priserdv->getId();
-        }
 
 
         $docteurDto = new DocteurDTO();
-        $docteurDto ->setId($docteur->getId())
-                    ->setUsername($docteur->getUsername())
-                    ->setPassword($docteur->getPassword())
-                    ->setnumeroOrdre($docteur->getNumeroOrdre())
+        $docteurDto ->setnumeroOrdre($docteur->getNumeroOrdre())
                     ->setNom($docteur->getNom())
                     ->setPrenom($docteur->getPrenom())
                     ->setAdresseTravail($docteur->getAdresseTravail())
@@ -61,10 +55,8 @@ class DocteurMapper{
                     ->setEmail($docteur->getEmail())
                     ->setTelephone($docteur->getTelephone())
                     ->setLienSiteInternet($docteur->getLienSiteInternet())
-                    ->setSpecialites($idsSpecialite)
-                    ->setPriseRdvs($idsPriseRdvs);
+                    ->setSpecialites($idsSpecialite);
                     
-        
         return$docteurDto;
     }
 }

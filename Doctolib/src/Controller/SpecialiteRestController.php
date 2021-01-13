@@ -7,6 +7,7 @@ use App\DTO\SpecialiteDTO;
 use App\Entity\Specialite;
 use App\Mapper\SpecialiteMapper;
 use FOS\RestBundle\View\View;
+use OpenApi\Annotations as OA;
 use App\Service\SpecialiteService;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\Get;
@@ -30,7 +31,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
     
 
     const URI_SPECIALITE_COLLECTION = "/specialites";
-    const URI_SPECIALITE_INSTANCE ="/specialites/{id}";
+    const URI_SPECIALITE_INSTANCE ="/specialites/{specialite}";
 
     public function __construct(EntityManagerInterface $entityManager, SpecialiteMapper $mapper, SpecialiteService $specialiteService){
         $this->specialiteService    = $specialiteService;
@@ -41,6 +42,29 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 
     /**
+     * 
+     * Récupérer la liste des spécialités
+     * @OA\Get(
+     *  path="/specialites",
+     *     tags={"Toutes les specialites"},
+     *     summary="Trouve l'ensemble des specialite de la bdd",
+     *     description="Retourne un tableau d'objet Docteur qui sera converti en tableau d'objets DocteurDTO. Accessible par tous les utilisateurs, connectés ou non. ",
+     *     
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/SpecialiteDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/SpecialiteDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Erreur de requete"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
      * @Get(SpecialiteRestController::URI_SPECIALITE_COLLECTION)
      */
     public function searchAll()
@@ -57,21 +81,50 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
         }
 
     }
-
+    
     /**
-     * @Get(SpecialiteRestController::URI_SPECIALITE_INSTANCE)
+     * Récupérer la liste des Docteurs selon la spécialité
+     * 
+     * @OA\Get(
+     *  path="/specialites/{specialite}",
+     *     tags={"Docteurs par spécialité"},
+     *     summary="Trouve l'ensemble des docteurs ayant la specialité passée en url",
+     *     description="Accessible uniquement aux utilisateurs connectés",
+     *     @OA\Parameter(
+     *         name="specialite",
+     *         in="path",
+     *         description="specialité à laquelle les docteurs sont rattachés",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/DocteurDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/DocteurDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Erreur de requete"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
+     * @GET(SpecialiteRestController::URI_SPECIALITE_INSTANCE)
      *
      * @return Response
      */
-    public function searchById(int $id){
+    public function searchBySpecialite(specialite $specialite){
         try{
-            $specialiteDTO = $this->specialiteService->searchById($id);
+            $docteurDTOs = $this->specialiteService->searchBySpecialite($specialite);
         }catch(SpecialiteServiceException $e){
             return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
         }
 
-        if($specialiteDTO !=null){
-            return View :: create($specialiteDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
+        if($docteurDTOs !=null){
+            return View :: create($docteurDTOs, Response::HTTP_OK, ["Content_type" => "application/json"]);
         }else{
             return View::create([], Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
         }
@@ -79,24 +132,26 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
     }
 
     /**
-     * @Delete(SpecialiteRestController::URI_SPECIALITE_INSTANCE)
-     *
-     * @param int $id
-     * @return void
-     */
-    public function remove(Specialite $specialite){ //pas besoin du dto car on recherche par ID de ce qui est entré dans la BDD
-
-        try{
-            
-            $this->specialiteService->delete($specialite);
-            return View :: create([], Response::HTTP_NO_CONTENT, ["Content_type" => "application/json"]); //no_content car on ne renvoit rien
-        }catch(SpecialiteServiceException $e){
-            return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
-           
-        }
-    }
-
-    /**
+     * 
+     * @OA\Post(
+     *     path="/specialites",
+     *     tags={"Créer une Specialite"},
+     *     summary="Création d'1 objet Specialite",
+     *     description="Ne peut être réalisée que par des adminitrateurs",
+     *     @OA\Response(
+     *         response=405,
+     *         description="Champ mal renseigné"
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Création réussie"
+     *     ),
+     *     @OA\RequestBody(
+     *         description="DocteurDTO JSON Object",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/SpecialiteDTO")
+     *     )
+     * )
      * @Post(SpecialiteRestController::URI_SPECIALITE_COLLECTION)
      * @ParamConverter("specialiteDTO", converter="fos_rest.request_body")
      *
@@ -120,6 +175,34 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
     }
 
     /**
+     * @OA\Put(
+     *     path="/specialites/{specialite}",
+     *     tags={"Modifier une Specialite"},
+     *     summary="modification de objet Specialite selon le nom",
+     *     description="Ne peut être réalisée que par des adminitrateurs",
+     *     @OA\Parameter(
+     *         name="specialite",
+     *         in="path",
+     *         description="nom de la specialité à modifier",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid user supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Specialite non trouvé"
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Mise à jour de la specialité",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/SpecialiteDTO")
+     *     )
+     * )
      * @Put(SpecialiteRestController::URI_SPECIALITE_INSTANCE)
      * @ParamConverter("specialiteDTO", converter="fos_rest.request_body")
      * @param SpecialiteDTO $specialiteDTO
@@ -135,3 +218,24 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
     }
     
  }
+
+
+ // /**
+    //  * @Get(SpecialiteRestController::URI_SPECIALITE_INSTANCE)
+    //  *
+    //  * @return Response
+    //  */
+    // public function searchById(int $id){
+    //     try{
+    //         $specialiteDTO = $this->specialiteService->searchById($id);
+    //     }catch(SpecialiteServiceException $e){
+    //         return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+    //     }
+
+    //     if($specialiteDTO !=null){
+    //         return View :: create($specialiteDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
+    //     }else{
+    //         return View::create([], Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
+    //     }
+        
+    // }

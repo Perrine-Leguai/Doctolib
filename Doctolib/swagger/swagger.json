@@ -1,0 +1,869 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "DocteurControlelr de l'api Rest",
+        "description": "controlelr permettant de gérer les intéraction enter le client et la base de données",
+        "version": "V1"
+    },
+    "paths": {
+        "/docteurs": {
+            "get": {
+                "tags": [
+                    "Tous les Ddocteurs"
+                ],
+                "summary": "Trouve l'ensemble des docteurs grace aux fonctions du repository",
+                "description": "Retourne un tableau d'objet Docteur qui sera converti en tableau d'objets DocteurDTO ",
+                "operationId": "App\\Controller\\DocteurRestController::searchAll",
+                "responses": {
+                    "200": {
+                        "description": "Opération réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Erreur de requete"
+                    },
+                    "500": {
+                        "description": "Nous rencontrons actuellement des problèmes"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Créer un Docteur"
+                ],
+                "operationId": "App\\Controller\\DocteurRestController::create",
+                "requestBody": {
+                    "description": "DocteurDTO JSON Object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocteurDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "405": {
+                        "description": "Input invalide"
+                    },
+                    "201": {
+                        "description": "Création réussie"
+                    }
+                }
+            }
+        },
+        "/docteurs/patients/{id}": {
+            "get": {
+                "tags": [
+                    "Patients selon id du Docteur"
+                ],
+                "summary": "Trouve l'ensemble des patients d'un docteur",
+                "description": "Retourne un tableau d'objets Patient qui sera converti en tableau d'objets PatientDTO ",
+                "operationId": "App\\Controller\\DocteurRestController::searchAllPatients",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id du Docteur dont on cherche les patients",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Erreur de requete"
+                    },
+                    "500": {
+                        "description": "Nous rencontrons actuellement des problèmes"
+                    }
+                }
+            }
+        },
+        "/docteurs/{id}": {
+            "get": {
+                "tags": [
+                    "Docteur selon id"
+                ],
+                "summary": "Trouve le docteur selon son id",
+                "description": "Retourne un  d'objet Docteur qui sera converti en objet DocteurDTO ",
+                "operationId": "App\\Controller\\DocteurRestController::searchById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id du Docteur que l'on cherche",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Erreur de requete"
+                    },
+                    "500": {
+                        "description": "Nous rencontrons actuellement des problèmes"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Modifier un Docteur"
+                ],
+                "summary": "modification de objet Docteur selon id",
+                "description": "Ne peut être réalisée que par le Docteur concerné",
+                "operationId": "App\\Controller\\DocteurRestController::update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id du docteur à modifier, qui est aussi l'id du docteur connecté",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Mise à jour du Docteur",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocteurDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid user supplied"
+                    },
+                    "404": {
+                        "description": "Docteur non trouvé"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Supprimer un Docteur"
+                ],
+                "summary": "Supprimer un docteur",
+                "description": "Uniquement accessible par le docteur en question",
+                "operationId": "App\\Controller\\DocteurRestController::remove",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id du docteur à supprimer",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid username supplied"
+                    },
+                    "404": {
+                        "description": "Nous ne trouvons pas de docteur avec cet id"
+                    }
+                }
+            }
+        },
+        "/patients/docteurs/{id}": {
+            "get": {
+                "tags": [
+                    "Patients selon id Docteur"
+                ],
+                "summary": "Trouve l'ensemble des patients inscrits sur la bdd, ayant au moins un rendez vous avec le Docteur précisé par l'id dans l'URL",
+                "description": "Retourne un tableau d'objets Patient qui sera converti en tableau d'objets PatientDTO ",
+                "operationId": "App\\Controller\\PatientRestController::searchAllDocteurs",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id du Docteur dont on cherche la liste des patients",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PatientDTO"
+                                }
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PatientDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Aucun docteur ne coreespond à votre requête"
+                    },
+                    "500": {
+                        "description": "Nous rencontrons actuellement des problèmes"
+                    }
+                }
+            }
+        },
+        "/patients/{id}": {
+            "put": {
+                "tags": [
+                    "Modifier un Patient"
+                ],
+                "summary": "modification de objet Patient selon id",
+                "description": "Ne peut être réalisée que par le Patient concerné",
+                "operationId": "App\\Controller\\PatientRestController::update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id du patient à modifier, qui est aussi l'id du patient connecté",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Mise à jour du Patient",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatientDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid id supplied"
+                    },
+                    "404": {
+                        "description": "Patient non trouvé"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Supprimer un Patient"
+                ],
+                "summary": "Supprimer un patient",
+                "description": "Uniquement accessible par le patient en question. L'ID se récupère automatiquement à la connexion du patient dans un $_SESSION",
+                "operationId": "App\\Controller\\PatientRestController::remove",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id du patient à supprimer",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid id supplied"
+                    },
+                    "404": {
+                        "description": "Nous ne trouvons pas de patient avec cet id"
+                    }
+                }
+            }
+        },
+        "/patients": {
+            "post": {
+                "tags": [
+                    "Créer un Patient"
+                ],
+                "summary": "Création d'1 patient",
+                "description": "Créationd u patient en inscription sur le site",
+                "operationId": "App\\Controller\\PatientRestController::create",
+                "requestBody": {
+                    "description": "PatientDTO JSON Object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatientDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "405": {
+                        "description": "Input invalide"
+                    },
+                    "201": {
+                        "description": "Création réussie"
+                    }
+                }
+            }
+        },
+        "/rdvs/{id}": {
+            "get": {
+                "tags": [
+                    "Liste des rdvs selon la personne connectée"
+                ],
+                "summary": "Trouve l'ensemble des rdvs d'un patient ou d'un docteur",
+                "description": "Retourne un tableau d'objets PriseRdv qui sera converti en tableau d'objets PriseRdvDTO, N'est accessible qu'à la personne connectée et uniquement ses rendez vous à elle. ",
+                "operationId": "App\\Controller\\PriseRdvRestController::searchById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id de la personne connectée",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Erreur de requete"
+                    },
+                    "500": {
+                        "description": "Nous rencontrons actuellement des problèmes"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Modifier un PriseRdv"
+                ],
+                "summary": "modification de objet PriseRdv selon id",
+                "description": "Ne peut être réalisée que par le Docteur concerné",
+                "operationId": "App\\Controller\\PriseRdvRestController::update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id du rdv PriseRdv a modifier",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Mise à jour du Docteur",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DocteurDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid user supplied"
+                    },
+                    "404": {
+                        "description": "Docteur non trouvé"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Supprimer un PriseRdv"
+                ],
+                "summary": "Supprimer un rdv",
+                "description": "Uniquement accessible par le docteur en question, qui est sur le rdv",
+                "operationId": "App\\Controller\\PriseRdvRestController::remove",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id du rdv a supprimer",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid id supplied"
+                    },
+                    "404": {
+                        "description": "Nous ne trouvons pas de rdv avec cet id"
+                    }
+                }
+            }
+        },
+        "/rdvs": {
+            "post": {
+                "tags": [
+                    "Créer une PriseRdv"
+                ],
+                "summary": "Création d'1 objet PriseRdv",
+                "description": "Peut-^etre créé par le docteur ou le patient",
+                "operationId": "App\\Controller\\PriseRdvRestController::create",
+                "requestBody": {
+                    "description": "DocteurDTO JSON Object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PriseRdvDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "405": {
+                        "description": "Input invalide"
+                    },
+                    "201": {
+                        "description": "Création réussie"
+                    }
+                }
+            }
+        },
+        "/specialites": {
+            "get": {
+                "tags": [
+                    "Toutes les specialites"
+                ],
+                "summary": "Trouve l'ensemble des specialite de la bdd",
+                "description": "Retourne un tableau d'objet Docteur qui sera converti en tableau d'objets DocteurDTO. Accessible par tous les utilisateurs, connectés ou non. ",
+                "operationId": "App\\Controller\\SpecialiteRestController::searchAll",
+                "responses": {
+                    "200": {
+                        "description": "Opération réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SpecialiteDTO"
+                                }
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SpecialiteDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Erreur de requete"
+                    },
+                    "500": {
+                        "description": "Nous rencontrons actuellement des problèmes"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Créer une Specialite"
+                ],
+                "summary": "Création d'1 objet Specialite",
+                "description": "Ne peut être réalisée que par des adminitrateurs",
+                "operationId": "App\\Controller\\SpecialiteRestController::create",
+                "requestBody": {
+                    "description": "DocteurDTO JSON Object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SpecialiteDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "405": {
+                        "description": "Champ mal renseigné"
+                    },
+                    "201": {
+                        "description": "Création réussie"
+                    }
+                }
+            }
+        },
+        "/specialites/{specialite}": {
+            "get": {
+                "tags": [
+                    "Docteurs par spécialité"
+                ],
+                "summary": "Trouve l'ensemble des docteurs ayant la specialité passée en url",
+                "description": "Accessible uniquement aux utilisateurs connectés",
+                "operationId": "App\\Controller\\SpecialiteRestController::searchBySpecialite",
+                "parameters": [
+                    {
+                        "name": "specialite",
+                        "in": "path",
+                        "description": "specialité à laquelle les docteurs sont rattachés",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            },
+                            "application/xml": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DocteurDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Erreur de requete"
+                    },
+                    "500": {
+                        "description": "Nous rencontrons actuellement des problèmes"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Modifier une Specialite"
+                ],
+                "summary": "modification de objet Specialite selon le nom",
+                "description": "Ne peut être réalisée que par des adminitrateurs",
+                "operationId": "App\\Controller\\SpecialiteRestController::update",
+                "parameters": [
+                    {
+                        "name": "specialite",
+                        "in": "path",
+                        "description": "nom de la specialité à modifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Mise à jour de la specialité",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SpecialiteDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Invalid user supplied"
+                    },
+                    "404": {
+                        "description": "Specialite non trouvé"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "DocteurDTO": {
+                "title": "DocteurDTO",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "number",
+                        "format": "int64"
+                    },
+                    "username": {
+                        "title": "username",
+                        "description": "username, obligatoire",
+                        "type": "string"
+                    },
+                    "password": {
+                        "title": "password",
+                        "description": "password, obligatoire",
+                        "type": "string",
+                        "format": "password"
+                    },
+                    "numeroOrdre": {
+                        "title": "numeroOrdre",
+                        "description": "numero d'ordre, unique et propre à chaque médecin, obligatoire",
+                        "type": "string"
+                    },
+                    "nom": {
+                        "title": "nom",
+                        "description": "nom, obligatoire",
+                        "type": "string"
+                    },
+                    "prenom": {
+                        "title": "prenom",
+                        "description": "prenom, obligatoire",
+                        "type": "string"
+                    },
+                    "adresseTravail": {
+                        "title": "adresseTravail",
+                        "description": "adresse de travail du docteur, obligatoire",
+                        "type": "string"
+                    },
+                    "codePostal": {
+                        "title": "codePostal",
+                        "description": "code postal de l'adresse de travail, obligatoire",
+                        "type": "string"
+                    },
+                    "ville": {
+                        "title": "ville",
+                        "description": "ville de l'adresse de travail, obligatoire",
+                        "type": "string"
+                    },
+                    "email": {
+                        "title": "email",
+                        "description": "email du docteur, obligatoire",
+                        "type": "string"
+                    },
+                    "telephone": {
+                        "title": "téléphone",
+                        "description": "téléphone professionnel du docteur",
+                        "type": "string"
+                    },
+                    "lienSiteInternet": {
+                        "title": "lien du site internet",
+                        "description": "lien du site internet du docteur",
+                        "type": "string"
+                    },
+                    "specialites": {
+                        "title": "specialites",
+                        "description": "tableaux des spécialités par docteur",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "priseRdvs": {
+                        "title": "rdv",
+                        "description": "tableaux des rdvs par docteurs",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "DocteurDTO"
+                }
+            },
+            "PatientDTO": {
+                "title": "PatientDTO",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "number",
+                        "format": "int64"
+                    },
+                    "username": {
+                        "title": "username",
+                        "description": "username, unique, obligatoire",
+                        "type": "string"
+                    },
+                    "password": {
+                        "title": "password",
+                        "description": "password, hashé,obligatoire",
+                        "type": "string"
+                    },
+                    "numeroCarteVitale": {
+                        "title": "numero carte vitale",
+                        "description": "numero de la carte vitale, unique également, obligatoire",
+                        "type": "string",
+                        "format": "password"
+                    },
+                    "nom": {
+                        "title": "nom",
+                        "description": "nom obligatoire",
+                        "type": "string"
+                    },
+                    "prenom": {
+                        "title": "prénom",
+                        "description": "prénom obligatoire",
+                        "type": "string"
+                    },
+                    "adresse": {
+                        "title": "adresse",
+                        "description": "adresse obligatoire",
+                        "type": "string"
+                    },
+                    "ville": {
+                        "title": "ville",
+                        "description": "ville obligatoire",
+                        "type": "string"
+                    },
+                    "codePostal": {
+                        "title": "code postal",
+                        "description": "code postal obligatoire",
+                        "type": "string"
+                    },
+                    "email": {
+                        "title": "email",
+                        "description": "email obligatoire",
+                        "type": "string"
+                    },
+                    "telephone": {
+                        "title": "telephone",
+                        "description": "telephone pas obligatoire",
+                        "type": "string"
+                    },
+                    "priseRdvs": {
+                        "title": "rendez-vous",
+                        "description": "tableaux des rendez vous du patient, les rendez vosu sont aussi des objets.",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "PatientDTO"
+                }
+            },
+            "PriseRdvDTO": {
+                "title": "PriseRdvDTO",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "type": "number",
+                        "format": "int64"
+                    },
+                    "date": {
+                        "title": "date",
+                        "description": "date du rendez vous médical",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "id_docteur": {
+                        "title": "docteur concerné par le rdv",
+                        "description": "id du docteur concerné par le rdv",
+                        "type": "number",
+                        "format": "int32"
+                    },
+                    "idPatient": {
+                        "title": "patient concerné par le rdv",
+                        "description": "id du patient concerné par le rdv",
+                        "type": "number",
+                        "format": "int32"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "PriseRdvDTO"
+                }
+            },
+            "SpecialiteDTO": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "nom": {
+                        "title": "nom",
+                        "description": "libelle de la specialite, , obligatoire",
+                        "type": "string"
+                    },
+                    "docteurs": {
+                        "title": "docteurs",
+                        "description": "tableaux des docteurs ayant cette spécialité",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}

@@ -10,19 +10,21 @@ use App\Entity\Specialite;
 use App\Repository\DocteurRepository;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class TestDocteurFixture extends Fixture
 {
-    public function __construct(DocteurRepository $repo){
+    public function __construct(DocteurRepository $repo, UserPasswordEncoderInterface $passwordEncoder){
         $this->repository = $repo;
+        $this->passwordEncoder = $passwordEncoder;
     
     }
     public function load(ObjectManager $manager)
     {
         $faker = Factory::create('fr_FR');
         for($i=1; $i<=5 ; $i++){
-            $docteur = (new Docteur())->setUsername($faker->shuffle('gentilDoc'))->setPassword($i.$i.$i.$i)->setNumeroOrdre('12345678'.$i)->setNom($faker->lastName)->setPrenom($faker->firstName)->setAdresseTravail($faker->streetAddress)->setCodePostal($faker->postcode)->setVille($faker->city)->setEmail($faker->email)->setTelephone($faker->phoneNumber);
-            $patient = (new Patient())->setUsername($faker->shuffle('gentilPatient'))->setPassword($i.$i.$i.$i)->setNumeroCarteVitale('29211212211'.$i)->setNom($faker->lastName)->setPrenom($faker->firstName)->setAdresse($faker->streetAddress)->setVille($faker->city)->setCodePostal($faker->postcode)->setEmail($faker->email)->setTelephone($faker->phoneNumber);
+            $docteur = (new Docteur())->setUsername($faker->shuffle('gentilDoc'))->setPassword($this->passwordEncoder->encodePassword($i.$i.$i.$i))->setNumeroOrdre('12345678'.$i)->setNom($faker->lastName)->setPrenom($faker->firstName)->setAdresseTravail($faker->streetAddress)->setCodePostal($faker->postcode)->setVille($faker->city)->setEmail($faker->email)->setTelephone($faker->phoneNumber);
+            $patient = (new Patient())->setUsername($faker->shuffle('gentilPatient'))->setPassword($this->passwordEncoder->encodePassword($i.$i.$i.$i))->setNumeroCarteVitale('29211212211'.$i)->setNom($faker->lastName)->setPrenom($faker->firstName)->setAdresse($faker->streetAddress)->setVille($faker->city)->setCodePostal($faker->postcode)->setEmail($faker->email)->setTelephone($faker->phoneNumber);
 
             $manager->persist($docteur);
             $manager->persist($patient);

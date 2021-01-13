@@ -1,23 +1,141 @@
 <?php
 
 namespace App\DTO;
+use OpenApi\Annotations as OA;
 
+
+/**
+ * @OA\Schema(
+ *     title="PatientDTO",
+ *     @OA\Xml(
+ *         name="PatientDTO"
+ *     )
+ * ) */
 class PatientDTO{
     
-     
+    /**
+     * @OA\Property(
+     *     title="ID",
+     *     description="ID",
+     *     type="number",
+     *     format="int64",
+     * )
+     *
+     * @var integer
+     */  
     private $id;
+    /**
+     * @OA\Property(
+     *     title="username",
+     *     description="username, unique, obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $username;
+    /**
+     * @OA\Property(
+     *     title="password",
+     *     description="password, hashé,obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $password;
 
+    /**
+     * @OA\Property(
+     *     title="numero carte vitale",
+     *     description="numero de la carte vitale, unique également, obligatoire",
+     *     type="string",
+     *     format="password"
+     * )
+     *
+     * @var string
+     */ 
     private $numeroCarteVitale;
+    /**
+     * @OA\Property(
+     *     title="nom",
+     *     description="nom obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $nom;
+    /**
+     * @OA\Property(
+     *     title="prénom",
+     *     description="prénom obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $prenom;
+    /**
+     * @OA\Property(
+     *     title="adresse",
+     *     description="adresse obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $adresse;
+    /**
+     * @OA\Property(
+     *     title="ville",
+     *     description="ville obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $ville;
+    /**
+     * @OA\Property(
+     *     title="code postal",
+     *     description="code postal obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $codePostal;
+    /**
+     * @OA\Property(
+     *     title="email",
+     *     description="email obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $email;
+    /**
+     * @OA\Property(
+     *     title="telephone",
+     *     description="telephone pas obligatoire",
+     *     type="string",
+     * )
+     *
+     * @var string
+     */ 
     private $telephone;
 
+    /**
+     * @OA\Property(
+     *     title="rendez-vous",
+     *     description="tableaux des rendez vous du patient, les rendez vosu sont aussi des objets.",
+     *     type= "array",
+     *     items = {"type"="object"}       
+     * )
+     * @var array
+     */ 
     private $priseRdvs;
 
 

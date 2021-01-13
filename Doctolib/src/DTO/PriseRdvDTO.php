@@ -2,11 +2,57 @@
 
 namespace App\DTO;
 
+/**
+ * @OA\Schema(
+ *     title="PriseRdvDTO",
+ *     @OA\Xml(
+ *         name="PriseRdvDTO"
+ *     )
+ * ) */
 class PriseRdvDTO{
-
+    
+    /**
+     * @OA\Property(
+     *     title="ID",
+     *     description="ID",
+     *     type="number",
+     *     format="int64",
+     * )
+     *
+     * @var integer
+     */ 
     private $id;
+    /**
+     * @OA\Property(
+     *     title="date",
+     *     description="date du rendez vous médical",
+     *     type="string",
+     *     format="date-time"
+     * )
+     *
+     * @var integer
+     */ 
     private $date;
+    
+    /**
+     * @OA\Property(
+     *     title="docteur concerné par le rdv",
+     *     description="id du docteur concerné par le rdv",
+     *     type= "number",
+     *     format="int32",       
+     * )
+     * @var int
+     */
     private $id_docteur;
+    /**
+     * @OA\Property(
+     *     title="patient concerné par le rdv",
+     *     description="id du patient concerné par le rdv",
+     *     type= "number",
+     *     format="int32",      
+     * )
+     * @var int
+     */
     private $idPatient;
 
     /**

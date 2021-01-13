@@ -10,7 +10,7 @@ use App\Entity\Specialite;
 class PatientMapper{
 
     //permet de traduire en php les informations reçues en POST, Json
-    public function transformePatientDtoToPatientEntity(PatientDTO $patientDTO, Patient $patient,  $priseRdv){
+    public function transformePatientDtoToPatientEntity(PatientDTO $patientDTO, Patient $patient){
         
         $patient->setUsername($patientDTO->getUsername())
                 ->setPassword($patientDTO->getPassword())
@@ -21,8 +21,8 @@ class PatientMapper{
                 ->setVille($patientDTO->getVille())
                 ->setCodePostal($patientDTO->getCodePostal())
                 ->setEmail($patientDTO->getEmail())
-                ->setTelephone($patientDTO->getTelephone())
-                ->addPriseRdv($priserdv);
+                ->setTelephone($patientDTO->getTelephone());
+                
 
     //est-ce qu'on envoie un tableau dans la fonction et pour each specialites as specialite on fait un setSpecialite ?
     //mm questionnement pour priserdvs
@@ -42,7 +42,6 @@ class PatientMapper{
         $patientDTO = new PatientDTO();
         $patientDTO ->setId($patient->getId())
                     ->setUsername($patient->getUsername())
-                    ->setPassword($patient->getPassword())
                     ->setNumeroCarteVitale($patient->getNumeroCarteVitale())
                     ->setNom($patient->getNom())
                     ->setPrenom($patient->getPrenom())

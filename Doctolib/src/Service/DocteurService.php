@@ -5,6 +5,7 @@ namespace App\Service;
 use App\DTO\DocteurDTO;
 use App\Entity\Docteur;
 use App\Mapper\DocteurMapper;
+use App\Mapper\PatientMapper;
 use App\Repository\DocteurRepository;
 use App\Repository\PriseRdvRepository;
 use App\Repository\SpecialiteRepository;
@@ -18,15 +19,17 @@ class DocteurService {
     private $specialiteRepository;
     private $priseRdvRepository;
     private $docteurMapper;
+    private $patientMapper;
     
 
-    public function __construct(EntityManagerInterface $manager, DocteurMapper $mapper, DocteurRepository $docteurRepository, SpecialiteRepository $specialiteRepostory, PriseRdvRepository $priseRdvRepository){
+    public function __construct(EntityManagerInterface $manager, DocteurMapper $mapper, DocteurRepository $docteurRepository, SpecialiteRepository $specialiteRepostory, PriseRdvRepository $priseRdvRepository, PatientMapper $patientMapper){
 
         $this->entityManager        = $manager;
         $this->docteurMapper        = $mapper;
         $this->docteurRepository    = $docteurRepository;
         $this->specialiteRepository = $specialiteRepostory;
         $this->priseRdvRepository   = $priseRdvRepository;
+        $this->patientMapper        = $patientMapper;
     }
 
     public function searchAll(){
@@ -53,6 +56,21 @@ class DocteurService {
             }
         }
 
+    public function searchAllPatients($id){
+        try{
+            $docteur = $this->docteurRepository->find($id);
+            $rdvs= $docteur->getPriseRdvs();
+            
+            foreach($rdvs as $rdv){
+               $patients[]=$this->patientMapper->transformeEntityToPatientDto($rdv->getIdPatient());
+            }
+    
+            return $patients;
+        }catch(DriverException $e){
+            throw new DocteurServiceException("un pb technique est arrivé");
+        }
+    }
+//le détail des rdvs est sur la liste rdv
 
     public function delete(Docteur $docteur){
         try{
@@ -66,18 +84,14 @@ class DocteurService {
 
     //permet de créer un nouveau docteur ET de faire les mises à jour
     public function persist(Docteur $docteur, DocteurDTO $docteurDTO){
-        try{
-            $specialiteIds[]=$docteurDTO->getSpecialites();
-            foreach ($specialiteIds as $specialiteId){
-                $specialites[]=$this->specialiteRepository->find($specialiteId);
-            }
-            $priseRdvIds[]=$docteurDTO->getPriseRdvs();
-            foreach ($priseRdvIds as $priseRdvId){
-                $priserdvs[]=$this->priseRdvRepository->find($priseRdvId);
-            }
+        try{         
 
-            $docteur= $this->docteurMapper->transformeDocteurDtoToDocteurEntity($docteurDTO, $docteur); //, $specialites, $priseRdvs);
-            $this->entityManager->persist($docteur);
+            $specialiteDTOs=$docteurDTO->getSpecialites();
+            foreach($specialiteDTOs as $specialite){
+               $specialites[]= $this->specialiteRepository->find($specialite);
+            }
+            $docteur= $this->docteurMapper->transformeDocteurDtoToDocteurEntity($docteurDTO, $docteur, $specialites); 
+            
             $this->entityManager->flush();
         }catch(DriverException $e){
             throw new DocteurServiceException("un pb technique est arrivé");
