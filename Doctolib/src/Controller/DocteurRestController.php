@@ -32,9 +32,9 @@ class DocteurRestController extends AbstractFOSRestController
     private $docteurRepo;
     private $priseRdvRepo;
 
-    const URI_DOCTEUR_COLLECTION = "/docteurs";
-    const URI_DOCTEUR_INSTANCE ="/docteurs/{id}";
-    const  URI_DOCTEUR_COLLECTION_PATIENTS = "/docteurs/patients/{id}";
+    const URI_DOCTEUR_COLLECTION = "/api/docteurs";
+    const URI_DOCTEUR_INSTANCE ="/api/docteurs/{id}";
+    const  URI_DOCTEUR_COLLECTION_PATIENTS = "/api/docteurs/patients/{id}";
 
     public function __construct(EntityManagerInterface $entityManager, DocteurMapper $mapper, DocteurService $docteurService, SpecialiteRepository $specialiteRepository){
         $this->docteurService       = $docteurService;
@@ -48,7 +48,7 @@ class DocteurRestController extends AbstractFOSRestController
     /**
      * Récupérer la liste des Docteurs
      * @OA\Get(
-     *  path="/docteurs",
+     *  path="/api/docteurs",
      *     tags={"Tous les Ddocteurs"},
      *     summary="Trouve l'ensemble des docteurs grace aux fonctions du repository",
      *     description="Retourne un tableau d'objet Docteur qui sera converti en tableau d'objets DocteurDTO ",
@@ -88,7 +88,7 @@ class DocteurRestController extends AbstractFOSRestController
     /**
      * Récupérer la liste des Partients par docteurs
      * @OA\Get(
-     *     path="/docteurs/patients/{id}",
+     *     path="/api/docteurs/patients/{id}",
      *     tags={"Patients selon id du Docteur"},
      *     summary="Trouve l'ensemble des patients d'un docteur",
      *     description="Retourne un tableau d'objets Patient qui sera converti en tableau d'objets PatientDTO ",
@@ -141,7 +141,7 @@ class DocteurRestController extends AbstractFOSRestController
     /**
      * Récupérer le docteur selon son id
      * @OA\Get(
-     *     path="/docteurs/{id}",
+     *     path="/api/docteurs/{id}",
      *     tags={"Docteur selon id"},
      *     summary="Trouve le docteur selon son id",
      *     description="Retourne un  d'objet Docteur qui sera converti en objet DocteurDTO ",
@@ -193,7 +193,7 @@ class DocteurRestController extends AbstractFOSRestController
 
     /**
      * @OA\Delete(
-     *     path="/docteurs/{id}",
+     *     path="/api/docteurs/{id}",
      *     tags={"Supprimer un Docteur"},
      *     summary="Supprimer un docteur",
      *     description="Uniquement accessible par le docteur en question",
@@ -234,7 +234,7 @@ class DocteurRestController extends AbstractFOSRestController
 
     /**
      * @OA\Post(
-     *     path="/docteurs",
+     *     path="/api/docteurs",
      *     tags={"Créer un Docteur"},
      *     @OA\Response(
      *         response=405,
@@ -271,7 +271,7 @@ class DocteurRestController extends AbstractFOSRestController
 
     /**
      * @OA\Put(
-     *     path="/docteurs/{id}",
+     *     path="/api/docteurs/{id}",
      *     tags={"Modifier un Docteur"},
      *     summary="modification de objet Docteur selon id",
      *     description="Ne peut être réalisée que par le Docteur concerné",

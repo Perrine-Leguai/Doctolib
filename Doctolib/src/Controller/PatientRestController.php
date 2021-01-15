@@ -28,9 +28,9 @@ class PatientRestController extends AbstractFOSRestController
     private $patientRepo;
     private $priseRdvRepo;
 
-    const URI_PATIENT_COLLECTION = "/patients";
-    const URI_PATIENT_INSTANCE ="/patients/{id}";
-    const URI_PATIENT_COLLECTION_DOCTEURS = "/patients/docteurs/{id}";
+    const URI_PATIENT_COLLECTION = "/api/patients";
+    const URI_PATIENT_INSTANCE ="/api/patients/{id}";
+    const URI_PATIENT_COLLECTION_DOCTEURS = "/api/patients/docteurs/{id}";
 
     public function __construct(EntityManagerInterface $entityManager, PatientMapper $mapper, patientService $patientService){
         $this->patientService       = $patientService;
@@ -42,7 +42,7 @@ class PatientRestController extends AbstractFOSRestController
     /**
      *  Récupérer la liste des Patients d'un docteur précisé par l'id
      * @OA\Get(
-     *  path="/patients/docteurs/{id}",
+     *  path="/api/patients/docteurs/{id}",
      *     tags={"Patients selon id Docteur"},
      *     summary="Trouve l'ensemble des patients inscrits sur la bdd, ayant au moins un rendez vous avec le Docteur précisé par l'id dans l'URL",
      *     description="Retourne un tableau d'objets Patient qui sera converti en tableau d'objets PatientDTO ",
@@ -95,7 +95,7 @@ class PatientRestController extends AbstractFOSRestController
 // SUPPRESSION DU COMPTE, NE PEUT ÊTRE FAIT QUE PAR LE PATIENT LUI MM
     /**
      *  @OA\Delete(
-     *     path="/patients/{id}",
+     *     path="/api/patients/{id}",
      *     tags={"Supprimer un Patient"},
      *     summary="Supprimer un patient",
      *     description="Uniquement accessible par le patient en question. L'ID se récupère automatiquement à la connexion du patient dans un $_SESSION",
@@ -139,7 +139,7 @@ class PatientRestController extends AbstractFOSRestController
 //INSCRIPTION SUR LE SITE
     /**
      * @OA\Post(
-     *     path="/patients",
+     *     path="/api/patients",
      *     tags={"Créer un Patient"},
      *     summary="Création d'1 patient",
      *     description="Créationd u patient en inscription sur le site",
@@ -179,7 +179,7 @@ class PatientRestController extends AbstractFOSRestController
 //MODIFICATION DU COMPTE, NE PEUT ÊTRE FAITE QUE PAR LE PATIENT LUI MM
     /**
       * @OA\Put(
-     *     path="/patients/{id}",
+     *     path="/api/patients/{id}",
      *     tags={"Modifier un Patient"},
      *     summary="modification de objet Patient selon id",
      *     description="Ne peut être réalisée que par le Patient concerné",

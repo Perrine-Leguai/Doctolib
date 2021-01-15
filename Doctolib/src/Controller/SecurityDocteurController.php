@@ -36,7 +36,7 @@ class SecurityDocteurController extends AbstractController
     
     
     /**
-     * @Route("/login", name="app_login")
+     * @Route("/web/login", name="app_login")
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {

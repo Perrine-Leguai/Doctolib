@@ -32,8 +32,8 @@ class PriseRdvRestController extends AbstractFOSRestController
     private $priseRdvMapper;
     private $priseRdvRepository;
 
-    const URI_PRISERDV_COLLECTION = "/rdvs";
-    const URI_PRISERDV_INSTANCE ="/rdvs/{id}";
+    const URI_PRISERDV_COLLECTION = "/api/rdvs";
+    const URI_PRISERDV_INSTANCE ="/api/rdvs/{id}";
 
     public function __construct(EntityManagerInterface $entityManager, PriseRdvMapper $mapper, PriseRdvService $priseRdvService, PriseRdvRepository $priseRdvRepository){
         $this->priseRdvService      = $priseRdvService;
@@ -46,7 +46,7 @@ class PriseRdvRestController extends AbstractFOSRestController
     /**
      * Récupérer la liste des rendez vous par docteurs ou par patients
      * @OA\Get(
-     *     path="/rdvs/{id}",
+     *     path="/api/rdvs/{id}",
      *     tags={"Liste des rdvs selon la personne connectée"},
      *     summary="Trouve l'ensemble des rdvs d'un patient ou d'un docteur",
      *     description="Retourne un tableau d'objets PriseRdv qui sera converti en tableau d'objets PriseRdvDTO, N'est accessible qu'à la personne connectée et uniquement ses rendez vous à elle. ",
@@ -99,7 +99,7 @@ class PriseRdvRestController extends AbstractFOSRestController
 
     /**
      * @OA\Delete(
-     *     path="/rdvs/{id}",
+     *     path="/api/rdvs/{id}",
      *     tags={"Supprimer un PriseRdv"},
      *     summary="Supprimer un rdv",
      *     description="Uniquement accessible par le docteur en question, qui est sur le rdv",
@@ -141,7 +141,7 @@ class PriseRdvRestController extends AbstractFOSRestController
 
     /**
      * @OA\Post(
-     *     path="/rdvs",
+     *     path="/api/rdvs",
      *     tags={"Créer une PriseRdv"},
      *     summary="Création d'1 objet PriseRdv",
      *     description="Peut-^etre créé par le docteur ou le patient",
@@ -179,7 +179,7 @@ class PriseRdvRestController extends AbstractFOSRestController
 
     /**
      * @OA\Put(
-     *     path="/rdvs/{id}",
+     *     path="/api/rdvs/{id}",
      *     tags={"Modifier un PriseRdv"},
      *     summary="modification de objet PriseRdv selon id",
      *     description="Ne peut être réalisée que par le Docteur concerné",

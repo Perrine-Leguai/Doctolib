@@ -24,7 +24,7 @@ class AppPatientAuthenticator extends AbstractFormLoginAuthenticator implements 
 {
     use TargetPathTrait;
 
-    public const LOGIN_ROUTE = 'patient/main';
+    public const LOGIN_ROUTE = '/api/login_check';
 
     private $entityManager;
     private $urlGenerator;
@@ -103,6 +103,6 @@ class AppPatientAuthenticator extends AbstractFormLoginAuthenticator implements 
 
     protected function getLoginUrl()
     {
-        return $this->urlGenerator->generate('patient/homepage');
+        return $this->urlGenerator->generate('api/patients/docteurs/5');
     }
 }
