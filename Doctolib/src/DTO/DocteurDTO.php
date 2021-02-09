@@ -147,6 +147,7 @@ class DocteurDTO{
      * @var integer
      */ 
     private $specialites;
+
     /**
      * @OA\Property(
      *     title="rdv",

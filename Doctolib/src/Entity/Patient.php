@@ -71,6 +71,7 @@ class Patient extends User
      * @ORM\OneToMany(targetEntity=PriseRdv::class, mappedBy="idPatient", cascade={"persist", "remove"})
      */
     private $priseRdvs;
+    
 
 
     public function __construct()

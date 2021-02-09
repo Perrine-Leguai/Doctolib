@@ -41,7 +41,16 @@ class SpecialiteService {
         }
     } 
 
-    public function searchBySpecialite(string $specialite){
+    public function searchById(int $id){
+        try{
+            $specialite = $this->specialiteRepository->find($id);
+            return  $this->specialiteMapper->transformeEntityToSpecialiteDto($specialite);
+        }catch(DriverException $e){
+            throw new SpecialiteServiceException("un pb technique est arrivé");
+        }
+    }
+    
+    public function searchBySpecialite( $specialite){
         try{
             $spe=$this->specialiteRepository->findOneBy(["nom" => $specialite]);
             $docteurs= $spe->getDocteurs();
@@ -85,11 +94,4 @@ class SpecialiteService {
     }
 }
 
-    // public function searchById(int $id){
-    //     try{
-    //         $specialite = $this->specialiteRepository->find($id);
-    //         return  $this->specialiteMapper->transformeEntityToSpecialiteDto($specialite);
-    //     }catch(DriverException $e){
-    //         throw new SpecialiteServiceException("un pb technique est arrivé");
-    //     }
-    // }
+    

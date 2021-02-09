@@ -32,6 +32,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
     const URI_SPECIALITE_COLLECTION = "/api/specialites";
     const URI_SPECIALITE_INSTANCE ="/api/specialites/{specialite}";
+    const URI_SPECIALITE_ID = "/api/specialite/{id}";
 
     public function __construct(EntityManagerInterface $entityManager, SpecialiteMapper $mapper, SpecialiteService $specialiteService){
         $this->specialiteService    = $specialiteService;
@@ -81,7 +82,57 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
         }
 
     }
-    
+    /**
+     * Récupérer la liste des Docteurs selon la spécialité
+     * 
+     * @OA\Get(
+     *  path="/api/specialites/{id}",
+     *     tags={"spécialité selon id"},
+     *     summary="Trouve la spécialité selon son id",
+     *     description="Accessible uniquement aux utilisateurs connectés",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="specialité selon id",
+     *         required=true,
+     *         @OA\Schema(type="number", format="int64")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/SpecialiteDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/SpecialiteDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Erreur de requete"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
+     * @GET(SpecialiteRestController::URI_SPECIALITE_ID)
+     *
+     * @return Response
+     */
+    public function searchById( $id){
+        try{
+            
+            $specialiteDTO = $this->specialiteService->searchById($id);
+            
+        }catch(SpecialiteServiceException $e){
+            return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+        }
+
+        if($specialiteDTO !=null){
+            return View :: create($specialiteDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
+        }else{
+            return View::create([], Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
+        }
+        
+    }
+
     /**
      * Récupérer la liste des Docteurs selon la spécialité
      * 
@@ -91,7 +142,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
      *     summary="Trouve l'ensemble des docteurs ayant la specialité passée en url",
      *     description="Accessible uniquement aux utilisateurs connectés",
      *     @OA\Parameter(
-     *         name="specialite",
+     *         name="nom",
      *         in="path",
      *         description="specialité à laquelle les docteurs sont rattachés",
      *         required=true,
@@ -116,7 +167,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
      *
      * @return Response
      */
-    public function searchBySpecialite(specialite $specialite){
+    public function searchBySpecialite( $specialite){
         try{
             $docteurDTOs = $this->specialiteService->searchBySpecialite($specialite);
         }catch(SpecialiteServiceException $e){
@@ -220,22 +271,4 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
  }
 
 
- // /**
-    //  * @Get(SpecialiteRestController::URI_SPECIALITE_INSTANCE)
-    //  *
-    //  * @return Response
-    //  */
-    // public function searchById(int $id){
-    //     try{
-    //         $specialiteDTO = $this->specialiteService->searchById($id);
-    //     }catch(SpecialiteServiceException $e){
-    //         return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
-    //     }
-
-    //     if($specialiteDTO !=null){
-    //         return View :: create($specialiteDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
-    //     }else{
-    //         return View::create([], Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
-    //     }
-        
-    // }
+ 

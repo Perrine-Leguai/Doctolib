@@ -29,6 +29,46 @@ class PatientService {
         $this->docteurMapper        = $docteurMapper;
     }
 
+    public function searchAllByName(){
+        try{
+            $patients=$this->patientRepository->findAll();
+            
+            //transformation de l'ensemble des Docteurs
+            $patientsDTO = [];
+            foreach($patients as $patient){
+                
+               $patientsDTO[]= ($this->patientMapper->transformeEntityToPatientDto($patient))->getUsername();
+            }
+            
+            
+            
+            return $patientsDTO;
+        }catch(DriverException $e){
+            throw new DocteurServiceException("un pb technique est arrivé");
+        }
+    }
+
+    public function searchByUsername(string $username){
+        try{
+            $patient = $this->patientRepository->findByUsername(["username" => $username]);
+            foreach($patient as $pat){
+                $patient = $pat;
+            }
+            return  $this->patientMapper->transformeEntityToPatientDto($patient);
+        }catch(DriverException $e){
+            throw new PatientServiceException("un pb technique est arrivé");
+        }
+    }
+
+    public function searchById(int $id){
+        try{
+            $patient = $this->patientRepository->find($id);
+            return  $this->patientMapper->transformeEntityToPatientDto($patient);
+        }catch(DriverException $e){
+            throw new PatientServiceException("un pb technique est arrivé");
+        }
+    }
+
     public function searchAllDocteurs($id){
         try{
             $patient=$this->patientRepository->find($id);
@@ -67,15 +107,3 @@ class PatientService {
 
 }
 
-//public function searchByIdDocteur(int $id){
-    //         try{
-    //             $rdvDoc = $this->priseRdvRepository->findBy(["id_docteur" => "$id"]);
-    //         foreach($rdvDoc as $rdv){
-    //             $patient = $this->patientRepository->find($rdv->getIdPatient());
-    //             $patients[] = $this->patientMapper->transformeEntityToPatientDto($patient);
-    //         }
-    //             return  $patient;
-    //         }catch(DriverException $e){
-    //             throw new PatientServiceException("un pb technique est arrivé");
-    //         }
-    //     }

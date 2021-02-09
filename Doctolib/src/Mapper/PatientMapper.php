@@ -31,14 +31,7 @@ class PatientMapper{
 
     //permet de traduire en Json les informations envoyées en POST depuis l'API
     public function transformeEntityToPatientDto(Patient $patient){
-        
-        //récupère tous les rdvs
-        $priserdvs=$patient->getPriseRdvs();
-        foreach($priserdvs as $priserdv){
-            $idsPriseRdvs[]=$priserdv->getId();
-        }
-
-
+      
         $patientDTO = new PatientDTO();
         $patientDTO ->setId($patient->getId())
                     ->setUsername($patient->getUsername())
@@ -49,8 +42,7 @@ class PatientMapper{
                     ->setVille($patient->getVille())
                     ->setCodePostal($patient->getCodePostal())
                     ->setEmail($patient->getEmail())
-                    ->setTelephone($patient->getTelephone())
-                    ->setPriseRdvs($idsPriseRdvs);
+                    ->setTelephone($patient->getTelephone());
                     
         
         return$patientDTO;

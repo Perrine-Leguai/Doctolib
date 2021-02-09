@@ -11,7 +11,7 @@ class DocteurMapper{
 
     //permet de traduire en php les informations reçues en POST, Json
     public function transformeDocteurDtoToDocteurEntity(DocteurDTO $docteurDTO, Docteur $docteur, $specialite){ 
-
+        
         $docteur->setUsername($docteurDTO->getUsername())
                 ->setPassword($docteurDTO->getPassword())
                 ->setNumeroOrdre($docteurDTO->getNumeroOrdre())
@@ -23,9 +23,12 @@ class DocteurMapper{
                 ->setEmail($docteurDTO->getEmail())
                 ->setTelephone($docteurDTO->getTelephone())
                 ->setLienSiteInternet($docteurDTO->getLienSiteInternet());
-        foreach( $specialite as $spe){
-            $docteur->addSpecialite($spe);
+        if(!empty($specialite)){
+            foreach( $specialite as $spe){
+                $docteur->addSpecialite($spe);
+            } 
         }
+        
                 
               
 
@@ -46,7 +49,8 @@ class DocteurMapper{
 
 
         $docteurDto = new DocteurDTO();
-        $docteurDto ->setnumeroOrdre($docteur->getNumeroOrdre())
+        $docteurDto ->setId($docteur->getId())
+                    ->setnumeroOrdre($docteur->getNumeroOrdre())
                     ->setNom($docteur->getNom())
                     ->setPrenom($docteur->getPrenom())
                     ->setAdresseTravail($docteur->getAdresseTravail())
@@ -55,7 +59,9 @@ class DocteurMapper{
                     ->setEmail($docteur->getEmail())
                     ->setTelephone($docteur->getTelephone())
                     ->setLienSiteInternet($docteur->getLienSiteInternet())
-                    ->setSpecialites($idsSpecialite);
+                    ->setSpecialites($idsSpecialite)
+                    ->setUsername($docteur->getUsername())
+                    ->setPassword($docteur->getPassword());
                     
         return$docteurDto;
     }

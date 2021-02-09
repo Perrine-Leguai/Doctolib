@@ -46,7 +46,19 @@ class DocteurService {
         }
     }
 
-    
+    public function searchByUsername(string $username){
+        try{
+            $docteur = $this->docteurRepository->findBy(["username" => $username]);
+            foreach($docteur as $doc){
+                $docteur = $doc;
+            }
+            
+            return  $this->docteurMapper->transformeEntityToDocteurDto($docteur);
+        }catch(DriverException $e){
+            throw new DocteurServiceException("un pb technique est arrivé");
+        }
+    }
+
     public function searchById(int $id){
             try{
                 $docteur = $this->docteurRepository->find($id);
@@ -85,11 +97,17 @@ class DocteurService {
     //permet de créer un nouveau docteur ET de faire les mises à jour
     public function persist(Docteur $docteur, DocteurDTO $docteurDTO){
         try{         
-
+            
+            
             $specialiteDTOs=$docteurDTO->getSpecialites();
-            foreach($specialiteDTOs as $specialite){
-               $specialites[]= $this->specialiteRepository->find($specialite);
+            
+            if(!empty($specialiteDTOs)){
+                foreach($specialiteDTOs as $specialite){
+                    $specialites[]= $this->specialiteRepository->find($specialite);
+                } 
+             
             }
+            
             $docteur= $this->docteurMapper->transformeDocteurDtoToDocteurEntity($docteurDTO, $docteur, $specialites); 
             
             $this->entityManager->flush();

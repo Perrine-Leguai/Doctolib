@@ -75,18 +75,19 @@ class PriseRdvService {
         }
     }
 
+    public function searchAll(){
+        try{
+            $priseRdvs=$this->priseRdvRepository->findAll();
+            //transformation de l'ensemble des PriseRdvs
+            $priseRdvsDTO = [];
+            foreach($priseRdvs as $priseRdv){
+               $priseRdvsDTO[]= $this->priseRdvMapper->transformeEntityToPriseRdvDto($priseRdv);
+            }
+            return $priseRdvsDTO;
+        }catch(DriverException $e){
+            throw new priseRdvServiceException("un pb technique est arrivé");
+        }
+    }
+
 }
 
-// public function searchAll(){
-//         try{
-//             $priseRdvs=$this->priseRdvRepository->findAll();
-//             //transformation de l'ensemble des PriseRdvs
-//             $priseRdvsDTO = [];
-//             foreach($priseRdvs as $priseRdv){
-//                $priseRdvsDTO[]= $this->priseRdvMapper->transformeEntityToPriseRdvDto($priseRdv);
-//             }
-//             return $priseRdvsDTO;
-//         }catch(DriverException $e){
-//             throw new priseRdvServiceException("un pb technique est arrivé");
-//         }
-//     }

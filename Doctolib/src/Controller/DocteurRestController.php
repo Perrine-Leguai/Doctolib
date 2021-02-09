@@ -33,8 +33,10 @@ class DocteurRestController extends AbstractFOSRestController
     private $priseRdvRepo;
 
     const URI_DOCTEUR_COLLECTION = "/api/docteurs";
+    const URI_DOCTEUR_CO_INSTANCE = "/api/docteurs/co/{username}";
     const URI_DOCTEUR_INSTANCE ="/api/docteurs/{id}";
     const  URI_DOCTEUR_COLLECTION_PATIENTS = "/api/docteurs/patients/{id}";
+    const URI_DOCTEUR_SPECIALITE_COLLECTION = "/api/docteurs/specialite/{id}";
 
     public function __construct(EntityManagerInterface $entityManager, DocteurMapper $mapper, DocteurService $docteurService, SpecialiteRepository $specialiteRepository){
         $this->docteurService       = $docteurService;
@@ -85,8 +87,10 @@ class DocteurRestController extends AbstractFOSRestController
 
     }
 
+    
+
     /**
-     * Récupérer la liste des Partients par docteurs
+     * Récupérer la liste des Patients par docteurs
      * @OA\Get(
      *     path="/api/docteurs/patients/{id}",
      *     tags={"Patients selon id du Docteur"},
@@ -189,7 +193,55 @@ class DocteurRestController extends AbstractFOSRestController
         
     }
 
-    
+    /**
+     * Récupérer le docteur selon son username
+     * @OA\Get(
+     *     path="/api/docteurs/co/{username}",
+     *     tags={"Docteur selon username"},
+     *     summary="Trouve le docteur selon son nom d'utilisateur",
+     *     description="Retourne un  d'objet Docteur qui sera converti en objet DocteurDTO ",
+     *     @OA\Parameter(
+     *         name="username",
+     *         in="path",
+     *         description="suername du Docteur que l'on cherche",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/DocteurDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/DocteurDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Erreur de requete"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
+     * @Get(DocteurRestController::URI_DOCTEUR_CO_INSTANCE)
+     *
+     * @return Response
+     */
+    public function searchByUsername(string $username){
+        try{
+            $docteurDTO = $this->docteurService->searchByUsername($username);
+        }catch(DocteurServiceException $e){
+            return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+        }
+
+        if($docteurDTO !=null){
+            return View :: create($docteurDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
+        }else{
+            return View::create([], Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
+        }
+        
+    }
 
     /**
      * @OA\Delete(
@@ -266,6 +318,7 @@ class DocteurRestController extends AbstractFOSRestController
 
         }catch(DocteurServiceException $e){
             return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+                            
         }
     }
 

@@ -24,6 +24,7 @@ class PatientDTO{
      * @var integer
      */  
     private $id;
+
     /**
      * @OA\Property(
      *     title="username",
@@ -34,6 +35,7 @@ class PatientDTO{
      * @var string
      */ 
     private $username;
+    
     /**
      * @OA\Property(
      *     title="password",

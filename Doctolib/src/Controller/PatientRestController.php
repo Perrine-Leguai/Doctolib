@@ -27,8 +27,10 @@ class PatientRestController extends AbstractFOSRestController
     private $patientMapper;
     private $patientRepo;
     private $priseRdvRepo;
-
+    
+    const URI_PATIENTS_COLLECTION ="/api/patients/username";
     const URI_PATIENT_COLLECTION = "/api/patients";
+    const URI_PATIENT_CO_INSTANCE = "/api/patients/co/{username}";
     const URI_PATIENT_INSTANCE ="/api/patients/{id}";
     const URI_PATIENT_COLLECTION_DOCTEURS = "/api/patients/docteurs/{id}";
 
@@ -38,9 +40,149 @@ class PatientRestController extends AbstractFOSRestController
         $this->patientMapper        = $mapper;
         
     } 
+    /**
+     * Récupérer la liste des Patients
+     * @OA\Get(
+     *  path="/api/patients/username",
+     *     tags={"Tous les patients"},
+     *     summary="Trouve l'ensemble des patients grace aux fonctions du repository",
+     *     description="Retourne un tableau d'objet Patients qui sera converti en tableau d'objets PatientDTO ",
+     *     
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/PatientDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/PatientDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Erreur de requete"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
+     * @Get(PatientRestController::URI_PATIENTS_COLLECTION)
+     */
+    public function searchAll()
+    {
+        try{
+            $patients = $this->patientService->searchAllByName();
+        }catch(PatientServiceException $e){
+            return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+        }
+        if($patients){
+            return View::create($patients, Response::HTTP_OK , ["Content-type"   =>  "application/json"]);
+        }else{
+            return View::create($patients, Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
+        }
+
+    }
 
     /**
-     *  Récupérer la liste des Patients d'un docteur précisé par l'id
+     * Récupérer le patient selon son id
+     * @OA\Get(
+     *     path="/api/patients/{id}",
+     *     tags={"Patients selon id"},
+     *     summary="Trouve le patient selon son id",
+     *     description="Retourne un  d'objet Patient qui sera converti en objet PatientDTO ",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id du Patient que l'on cherche",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="number",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/PatientDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/PatientDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Erreur de requete"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
+     * @Get(PatientRestController::URI_PATIENT_INSTANCE)
+     *
+     * @return Response
+     */
+    public function searchById(int $id){
+        try{
+            $patientDTO = $this->patientService->searchById($id);
+        }catch(PatientServiceException $e){
+            return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+        }
+
+        if($patientDTO !=null){
+            return View :: create($patientDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
+        }else{
+            return View::create([], Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
+        }
+        
+    }
+
+    /**
+     * Récupérer le patient selon son username
+     * @OA\Get(
+     *     path="/api/patients/co/{username}",
+     *     tags={"Patients selon username"},
+     *     summary="Trouve le patient selon son username",
+     *     description="Retourne un  d'objet Patient qui sera converti en objet PatientDTO ",
+     *     @OA\Parameter(
+     *         name="username",
+     *         in="path",
+     *         description="username du Patient que l'on cherche",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/PatientDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/PatientDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Erreur de requete"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
+     * @Get(PatientRestController::URI_PATIENT_CO_INSTANCE)
+     *
+     * @return Response
+     */
+    public function searchOneByUsername(string $username){
+        try{
+            $patientDTO = $this->patientService->searchByUsername($username);
+        }catch(PatientServiceException $e){
+            return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+        }
+
+        if($patientDTO !=null){
+            return View :: create($patientDTO, Response::HTTP_OK, ["Content_type" => "application/json"]);
+        }else{
+            return View::create([], Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
+        }
+        
+    }
+
+    /**
+     *  Récupérer la liste des docteurs d'un patient précisé par l'id
      * @OA\Get(
      *  path="/api/patients/docteurs/{id}",
      *     tags={"Patients selon id Docteur"},

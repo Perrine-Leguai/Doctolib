@@ -44,6 +44,46 @@ class PriseRdvRestController extends AbstractFOSRestController
     }
 
     /**
+     * Récupérer la liste de tous les rdvs
+     * @OA\Get(
+     *     path="/api/rdvs",
+     *     tags={"Liste des rdvs "},
+     *     summary="Trouve l'ensemble des rdvs ",
+     *     description="Retourne un tableau d'objets PriseRdv qui sera converti en tableau d'objets PriseRdvDTO",
+     *     
+     *     @OA\Response(
+     *         response=200,
+     *         description="Opération réussie",
+     *         @OA\JsonContent(ref="#/components/schemas/PriseRdvDTO"),
+     *         @OA\XmlContent(ref="#/components/schemas/PriseRdvDTO"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Erreur de requete"
+     *     ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="Nous rencontrons actuellement des problèmes"
+     *      )
+     * )
+     * @Get(PriseRdvRestController::URI_PRISERDV_COLLECTION)
+     */
+    public function searchAll()
+    {
+        try{
+            $priseRdvs = $this->priseRdvService->searchAll();
+        }catch(PriseRdvServiceException $e){
+            return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
+        }
+        if($priseRdvs){
+            return View::create($priseRdvs, Response::HTTP_OK , ["Content-type"   =>  "application/json"]);
+        }else{
+            return View::create($priseRdvs, Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
+        }
+
+    }
+
+    /**
      * Récupérer la liste des rendez vous par docteurs ou par patients
      * @OA\Get(
      *     path="/api/rdvs/{id}",
@@ -223,20 +263,4 @@ class PriseRdvRestController extends AbstractFOSRestController
       
 }
 
-    // /**
-    //  * @Get(PriseRdvRestController::URI_PRISERDV_COLLECTION)
-    //  */
-    // public function searchAll()
-    // {
-    //     try{
-    //         $priseRdvs = $this->priseRdvService->searchAll();
-    //     }catch(PriseRdvServiceException $e){
-    //         return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
-    //     }
-    //     if($priseRdvs){
-    //         return View::create($priseRdvs, Response::HTTP_OK , ["Content-type"   =>  "application/json"]);
-    //     }else{
-    //         return View::create($priseRdvs, Response::HTTP_NOT_FOUND , ["Content-type"   =>  "application/json"]);
-    //     }
-
-    // }
+    
