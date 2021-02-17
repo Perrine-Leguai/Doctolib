@@ -6,14 +6,22 @@ use App\DTO\DocteurDTO;
 use App\Entity\Docteur;
 use App\Entity\PriseRdv;
 use App\Entity\Specialite;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
 
 class DocteurMapper{
+    
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    {
+        $this->passwordEncoder = $passwordEncoder; 
+              
+    }
 
     //permet de traduire en php les informations reçues en POST, Json
     public function transformeDocteurDtoToDocteurEntity(DocteurDTO $docteurDTO, Docteur $docteur, $specialite){ 
         
         $docteur->setUsername($docteurDTO->getUsername())
-                ->setPassword($docteurDTO->getPassword())
+                ->setPassword($this->passwordEncoder->encodePassword( $docteur, $docteurDTO->getPassword() ))
                 ->setNumeroOrdre($docteurDTO->getNumeroOrdre())
                 ->setNom($docteurDTO->getNom())
                 ->setPrenom($docteurDTO->getPrenom())

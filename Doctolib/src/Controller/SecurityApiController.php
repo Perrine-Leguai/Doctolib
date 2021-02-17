@@ -10,18 +10,20 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityApiController extends AbstractController{
 
-    /**
-     * 
-     *@Route(name="api_login", path="/api/login_check")
-     * @return JsonResponse
-     */
-    public function api_login() :JsonResponse {
-        $user= $this->getPatient();
-        return new Response([
-            'username'  => $user->getUsername(),
-            'roles'     => $user->getRoles(),
-        ]);
-    }
+    // /**
+    //  * 
+    //  *@Route(name="api_login", path="/api/login_check")
+    //  * @return JsonResponse
+    //  */
+    //     public function api_login(AuthenticationUtils $authenticationUtils) :JsonResponse {
+    //         $lastUsername = $authenticationUtils->getLastUsername();
+            
+            
+    //         return new Response([
+    //         'username'  => $lastUsername,
+            
+    //     ]);
+    // }
 
     /**
      * @Route("/login", name="app_login")

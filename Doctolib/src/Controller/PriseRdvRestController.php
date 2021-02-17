@@ -34,6 +34,7 @@ class PriseRdvRestController extends AbstractFOSRestController
 
     const URI_PRISERDV_COLLECTION = "/api/rdvs";
     const URI_PRISERDV_INSTANCE ="/api/rdvs/{id}";
+    const URI_PRISERDV_INSTANCE_profil ="/api/rdvs/{profil}/{id}";
 
     public function __construct(EntityManagerInterface $entityManager, PriseRdvMapper $mapper, PriseRdvService $priseRdvService, PriseRdvRepository $priseRdvRepository){
         $this->priseRdvService      = $priseRdvService;
@@ -86,7 +87,7 @@ class PriseRdvRestController extends AbstractFOSRestController
     /**
      * Récupérer la liste des rendez vous par docteurs ou par patients
      * @OA\Get(
-     *     path="/api/rdvs/{id}",
+     *     path="/api/rdvs/{profil}/{id}",
      *     tags={"Liste des rdvs selon la personne connectée"},
      *     summary="Trouve l'ensemble des rdvs d'un patient ou d'un docteur",
      *     description="Retourne un tableau d'objets PriseRdv qui sera converti en tableau d'objets PriseRdvDTO, N'est accessible qu'à la personne connectée et uniquement ses rendez vous à elle. ",
@@ -115,16 +116,16 @@ class PriseRdvRestController extends AbstractFOSRestController
      *          description="Nous rencontrons actuellement des problèmes"
      *      )
      * )
-     * @Get(PriseRdvRestController::URI_PRISERDV_INSTANCE) //id de la personne connectée dans la barre de recherche
+     * @Get(PriseRdvRestController::URI_PRISERDV_INSTANCE_profil ) //id de la personne connectée dans la barre de recherche
      *
      * @return Response
      */
-    public function searchById(int $id){
+    public function searchById(string $profil, int $id){
         try{
-            $_SESSION['role']="PATIENT";
-            if(isset($_SESSION['role']) && !empty($_SESSION['role'])){
-                            $priseRdvDTOs = $this->priseRdvService->searchById($id, $_SESSION['role']);
-            }
+            
+            
+            $priseRdvDTOs = $this->priseRdvService->searchById($id, $profil);
+            
         }catch(PriseRdvServiceException $e){
             return View::create($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR , ["Content-type"   =>  "application/json"]);
         }

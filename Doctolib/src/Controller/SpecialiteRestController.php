@@ -33,6 +33,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
     const URI_SPECIALITE_COLLECTION = "/api/specialites";
     const URI_SPECIALITE_INSTANCE ="/api/specialites/{specialite}";
     const URI_SPECIALITE_ID = "/api/specialite/{id}";
+    const URI_SPE_OPEN_COLLECTION = "/apo/specialites";
 
     public function __construct(EntityManagerInterface $entityManager, SpecialiteMapper $mapper, SpecialiteService $specialiteService){
         $this->specialiteService    = $specialiteService;
@@ -46,7 +47,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
      * 
      * Récupérer la liste des spécialités
      * @OA\Get(
-     *  path="/api/specialites",
+     *  path="/apo/specialites",
      *     tags={"Toutes les specialites"},
      *     summary="Trouve l'ensemble des specialite de la bdd",
      *     description="Retourne un tableau d'objet Docteur qui sera converti en tableau d'objets DocteurDTO. Accessible par tous les utilisateurs, connectés ou non. ",
@@ -66,7 +67,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
      *          description="Nous rencontrons actuellement des problèmes"
      *      )
      * )
-     * @Get(SpecialiteRestController::URI_SPECIALITE_COLLECTION)
+     * @Get(SpecialiteRestController::URI_SPE_OPEN_COLLECTION)
      */
     public function searchAll()
     {

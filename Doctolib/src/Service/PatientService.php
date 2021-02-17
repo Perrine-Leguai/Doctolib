@@ -52,9 +52,10 @@ class PatientService {
         try{
             $patient = $this->patientRepository->findByUsername(["username" => $username]);
             foreach($patient as $pat){
-                $patient = $pat;
+                
+                return  $this->patientMapper->transformeEntityToPatientDto($pat);
             }
-            return  $this->patientMapper->transformeEntityToPatientDto($patient);
+            
         }catch(DriverException $e){
             throw new PatientServiceException("un pb technique est arrivé");
         }

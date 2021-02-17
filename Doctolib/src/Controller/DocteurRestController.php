@@ -37,6 +37,7 @@ class DocteurRestController extends AbstractFOSRestController
     const URI_DOCTEUR_INSTANCE ="/api/docteurs/{id}";
     const  URI_DOCTEUR_COLLECTION_PATIENTS = "/api/docteurs/patients/{id}";
     const URI_DOCTEUR_SPECIALITE_COLLECTION = "/api/docteurs/specialite/{id}";
+    const URI_DOCTEUR_OPEN_COLLECTION="/apo/docteurs";
 
     public function __construct(EntityManagerInterface $entityManager, DocteurMapper $mapper, DocteurService $docteurService, SpecialiteRepository $specialiteRepository){
         $this->docteurService       = $docteurService;
@@ -286,7 +287,7 @@ class DocteurRestController extends AbstractFOSRestController
 
     /**
      * @OA\Post(
-     *     path="/api/docteurs",
+     *     path="/apo/docteurs",
      *     tags={"Créer un Docteur"},
      *     @OA\Response(
      *         response=405,
@@ -302,7 +303,7 @@ class DocteurRestController extends AbstractFOSRestController
      *         @OA\JsonContent(ref="#/components/schemas/DocteurDTO")
      *     )
      * )
-     * @Post(DocteurRestController::URI_DOCTEUR_COLLECTION)
+     * @Post(DocteurRestController::URI_DOCTEUR_OPEN_COLLECTION)
      * @ParamConverter("docteurDTO", converter="fos_rest.request_body")
      *
      * @param Docteur $docteur

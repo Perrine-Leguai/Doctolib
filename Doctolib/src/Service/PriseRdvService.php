@@ -30,12 +30,12 @@ class PriseRdvService {
 
     
 
-    public function searchById(int $id, $session){
+    public function searchById(int $id, string $session){
         try{
-            if($session=='PATIENT'){
+            if($session=='patient'){
                 $priseRdvs = $this->priseRdvRepository->findBy( ["idPatient" => $id]);
             }
-            if($session=='DOCTEUR'){
+            if($session=='docteur'){
                 $priseRdv = $this->priseRdvRepository->findBy( ["id_docteur" => $id]);
             }
             foreach($priseRdvs as $rdv){

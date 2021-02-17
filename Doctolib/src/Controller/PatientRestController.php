@@ -28,11 +28,13 @@ class PatientRestController extends AbstractFOSRestController
     private $patientRepo;
     private $priseRdvRepo;
     
-    const URI_PATIENTS_COLLECTION ="/api/patients/username";
+    const URI_PATIENTS_COLLECTION ="/apo/patients/username";
     const URI_PATIENT_COLLECTION = "/api/patients";
     const URI_PATIENT_CO_INSTANCE = "/api/patients/co/{username}";
     const URI_PATIENT_INSTANCE ="/api/patients/{id}";
+    
     const URI_PATIENT_COLLECTION_DOCTEURS = "/api/patients/docteurs/{id}";
+    const URI_PATIENT_OPEN_COLLECTION ="/apo/patients";
 
     public function __construct(EntityManagerInterface $entityManager, PatientMapper $mapper, patientService $patientService){
         $this->patientService       = $patientService;
@@ -43,7 +45,7 @@ class PatientRestController extends AbstractFOSRestController
     /**
      * Récupérer la liste des Patients
      * @OA\Get(
-     *  path="/api/patients/username",
+     *  path="/apo/patients/username",
      *     tags={"Tous les patients"},
      *     summary="Trouve l'ensemble des patients grace aux fonctions du repository",
      *     description="Retourne un tableau d'objet Patients qui sera converti en tableau d'objets PatientDTO ",
@@ -281,7 +283,7 @@ class PatientRestController extends AbstractFOSRestController
 //INSCRIPTION SUR LE SITE
     /**
      * @OA\Post(
-     *     path="/api/patients",
+     *     path="/apo/patients",
      *     tags={"Créer un Patient"},
      *     summary="Création d'1 patient",
      *     description="Créationd u patient en inscription sur le site",
@@ -300,7 +302,7 @@ class PatientRestController extends AbstractFOSRestController
      *         @OA\JsonContent(ref="#/components/schemas/PatientDTO")
      *     )
      * )
-     * @Post(PatientRestController::URI_PATIENT_COLLECTION)
+     * @Post(PatientRestController::URI_PATIENT_OPEN_COLLECTION)
      * @ParamConverter("patientDTO", converter="fos_rest.request_body")
      *
      * @param Patient $patient
